@@ -1,0 +1,509 @@
+---
+title: 'Styling & Theming'
+description: 'Tailwind CSS configuration, CSS variables, and theming approach in the Arsh Saxena Portfolio'
+---
+
+The project uses **Tailwind CSS** with a custom design system built on CSS variables for theming. This approach enables seamless light/dark mode switching and consistent styling across the entire application.
+
+## Tailwind CSS Setup
+
+### Configuration File
+
+**File:** `tailwind.config.js`
+
+```javascript tailwind.config.js:1-76
+// tailwind.config.js
+
+const defaultTheme = require('tailwindcss/defaultTheme');
+const colors = require('tailwindcss/colors');
+
+module.exports = {
+  content: [
+    './app/**/*.{js,ts,jsx,tsx,mdx}',
+    './components/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
+  darkMode: 'class',
+  theme: {
+    extend: {
+      fontFamily: {
+        sans: ['var(--font-geist)', ...defaultTheme.fontFamily.sans],
+        mono: ['var(--font-geist-mono)'],
+      },
+      borderRadius: {
+        lg: 'var(--radius)',
+        md: 'calc(var(--radius) - 2px)',
+        sm: 'calc(var(--radius) - 4px)',
+      },
+      colors: {
+        ...colors,
+        background: 'hsl(var(--background))',
+        foreground: 'hsl(var(--foreground))',
+        card: {
+          DEFAULT: 'hsl(var(--card))',
+          foreground: 'hsl(var(--card-foreground))',
+        },
+        primary: {
+          DEFAULT: 'hsl(var(--primary))',
+          foreground: 'hsl(var(--primary-foreground))',
+        },
+        // ... additional color tokens
+      },
+      boxShadow: {
+        input: '0px 2px 3px -1px rgba(0,0,0,0.1), ...',
+      },
+    },
+  },
+  plugins: [require('tailwindcss-animate')],
+};
+```
+
+**Key Features:**
+
+<CardGroup cols={2}>
+  <Card title="Dark Mode" icon="moon">
+    Class-based dark mode strategy using `darkMode: 'class'`
+  </Card>
+  <Card title="Custom Fonts" icon="font">
+    Geist Sans and Geist Mono integrated via CSS variables
+  </Card>
+  <Card title="Design Tokens" icon="palette">
+    HSL-based color system for dynamic theming
+  </Card>
+  <Card title="Animations" icon="wand-magic-sparkles">
+    tailwindcss-animate plugin for built-in animations
+  </Card>
+</CardGroup>
+
+### Content Paths
+
+```javascript tailwind.config.js:9-12
+content: [
+  './app/**/*.{js,ts,jsx,tsx,mdx}',
+  './components/**/*.{js,ts,jsx,tsx,mdx}',
+  './src/**/*.{js,ts,jsx,tsx,mdx}',
+],
+```
+
+Tailwind scans these paths for class names to include in the final CSS bundle.
+
+## Global Styles
+
+**File:** `src/styles/global.css`
+
+```css src/styles/global.css:1-67
+/* src/styles/global.css */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import '@fontsource/geist-sans/400.css';
+@import '@fontsource/geist-sans/500.css';
+@import '@fontsource/geist-sans/700.css';
+
+:root {
+  --font-geist: 'Geist Sans', sans-serif;
+
+  --background: #f5f5f7;
+  --foreground: #0a0a0a;
+
+  --main: #166534;
+  --accent: #22c55e;
+
+  --surface: #dadada66;
+  --overlay: #131313;
+  --muted: #393939;
+
+  --border-default: #a8a8a8;
+}
+
+.dark {
+  --background: #0a0a0a;
+  --foreground: #f5f5f7;
+
+  --main: #166534;
+  --accent: #22c55e;
+
+  --surface: #13131380;
+  --overlay: #dadada;
+  --muted: #a2a2a9;
+
+  --border-default: #333333;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist);
+  transition:
+    background 0.5s,
+    color 0.5s;
+}
+
+canvas {
+  transform: none !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+img {
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.footer-fill-space {
+  min-height: calc(100vh - 475px);
+}
+```
+
+Imported in the root layout:
+
+```javascript src/app/layout.js:3
+import '@/styles/global.css';
+```
+
+## CSS Variables
+
+The design system is built on CSS variables for dynamic theming.
+
+<AccordionGroup>
+  <Accordion title="Color Variables - Light Mode">
+    ```css
+    :root {
+      --background: #f5f5f7;    /* Off-white background */
+      --foreground: #0a0a0a;    /* Nearly black text */
+      
+      --main: #166534;          /* Green primary color */
+      --accent: #22c55e;        /* Bright green accent */
+      
+      --surface: #dadada66;     /* Semi-transparent surface */
+      --overlay: #131313;       /* Dark overlay */
+      --muted: #393939;         /* Muted gray */
+      
+      --border-default: #a8a8a8; /* Border color */
+    }
+    ```
+    
+    Light mode uses a clean, minimal palette with high contrast for readability.
+  </Accordion>
+
+  <Accordion title="Color Variables - Dark Mode">
+    ```css
+    .dark {
+      --background: #0a0a0a;    /* Nearly black background */
+      --foreground: #f5f5f7;    /* Off-white text */
+      
+      --main: #166534;          /* Same green primary */
+      --accent: #22c55e;        /* Same bright green */
+      
+      --surface: #13131380;     /* Dark semi-transparent surface */
+      --overlay: #dadada;       /* Light overlay */
+      --muted: #a2a2a9;         /* Light muted gray */
+      
+      --border-default: #333333; /* Darker border */
+    }
+    ```
+    
+    Dark mode inverts background/foreground while keeping brand colors consistent.
+    
+    <Note>
+      Notice that `--main` and `--accent` (brand colors) remain the same in both themes for consistency.
+    </Note>
+  </Accordion>
+
+  <Accordion title="Typography Variables">
+    ```css
+    :root {
+      --font-geist: 'Geist Sans', sans-serif;
+    }
+    ```
+    
+    Font family is defined as a CSS variable and used in:
+    1. **Tailwind config** - `fontFamily.sans`
+    2. **Global styles** - `body { font-family: var(--font-geist); }`
+    3. **Layout component** - `className={GeistSans.className}`
+  </Accordion>
+</AccordionGroup>
+
+## Theming System
+
+### Dark Mode Implementation
+
+The project uses `next-themes` for theme management:
+
+```json package.json:28
+"next-themes": "^0.4.6"
+```
+
+**How it works:**
+
+1. **ThemeToggle component** - User interface for switching themes
+2. **next-themes provider** - Manages theme state and localStorage
+3. **Class-based toggle** - Adds `.dark` class to `<html>` element
+4. **CSS variables** - `.dark` selector overrides color values
+
+### Using Variables in Tailwind
+
+Tailwind classes reference CSS variables:
+
+```jsx
+<div className="bg-[var(--surface)] border-[var(--border-default)]">
+  <p className="text-[var(--foreground)]">
+    Content adapts to theme
+  </p>
+</div>
+```
+
+**Real example from the codebase:**
+
+```jsx src/app/page.js:19
+<section className="... border-[var(--border-default)] bg-[var(--surface)] ...">
+  <AnimatedImgs />
+</section>
+```
+
+### Theme Transitions
+
+```css src/styles/global.css:41-47
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist);
+  transition:
+    background 0.5s,
+    color 0.5s;
+}
+```
+
+Smooth 0.5s transitions when switching between light and dark modes.
+
+## Typography
+
+### Font Loading
+
+The project uses **Geist Sans** font family:
+
+**Method 1: @fontsource (CSS)**
+```css src/styles/global.css:7-9
+@import '@fontsource/geist-sans/400.css';
+@import '@fontsource/geist-sans/500.css';
+@import '@fontsource/geist-sans/700.css';
+```
+
+**Method 2: geist package (Next.js)**
+```javascript src/app/layout.js:5-6
+import { GeistSans } from 'geist/font/sans';
+import { GeistMono } from 'geist/font/mono';
+```
+
+Applied to HTML element:
+```javascript src/app/layout.js:62-64
+<html
+  lang="en"
+  className={`${GeistSans.className} ${GeistMono.variable}`}
+>
+```
+
+### Font Weights
+
+- **400** - Regular (body text)
+- **500** - Medium (headings, emphasis)
+- **700** - Bold (strong emphasis)
+
+## Common Styling Patterns
+
+### Card/Section Styling
+
+Most sections use this consistent pattern:
+
+```jsx
+<section className="
+  mx-5                                    /* Horizontal margin */
+  mb-10                                   /* Bottom spacing */
+  rounded-[25px]                          /* Large rounded corners */
+  border-[1px]                            /* 1px border */
+  border-[var(--border-default)]          /* Theme-aware border color */
+  bg-[var(--surface)]                     /* Semi-transparent background */
+  p-5                                     /* Padding */
+  text-[16px]                             /* Font size */
+  md:text-[16px]                          /* Responsive text size */
+  md:dark:border-[var(--border-default)]  /* Dark mode border on medium+ */
+">
+  {/* Content */}
+</section>
+```
+
+### Responsive Design
+
+Tailwind's responsive prefixes:
+
+```jsx
+<div className="
+  p-2              /* Padding on mobile */
+  md:p-4           /* Larger padding on tablet */
+  lg:p-6           /* Even larger on desktop */
+  
+  text-sm          /* Small text on mobile */
+  md:text-base     /* Normal text on tablet+ */
+">
+```
+
+**Breakpoints:**
+- `sm:` - 640px+
+- `md:` - 768px+
+- `lg:` - 1024px+
+- `xl:` - 1280px+
+- `2xl:` - 1536px+
+
+### Container Width
+
+Consistent max-width across pages:
+
+```jsx src/app/layout.js:107
+<div className="container m-auto max-w-[980px]">
+  {/* All content constrained to 980px */}
+</div>
+```
+
+## Custom Utilities
+
+### Footer Spacing
+
+```css src/styles/global.css:64-66
+.footer-fill-space {
+  min-height: calc(100vh - 475px);
+}
+```
+
+Ensures the footer stays at the bottom even on short pages.
+
+### Image Behavior
+
+```css src/styles/global.css:58-62
+img {
+  pointer-events: none;    /* Prevent click events */
+  user-select: none;       /* Disable selection */
+  -webkit-user-drag: none; /* Disable dragging */
+}
+```
+
+Prevents users from dragging or selecting images, creating a more app-like experience.
+
+### Canvas Styling
+
+```css src/styles/global.css:50-56
+canvas {
+  transform: none !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+```
+
+Forces full-screen canvas for the animated background.
+
+## Tailwind Plugins
+
+### tailwindcss-animate
+
+```javascript tailwind.config.js:74
+plugins: [require('tailwindcss-animate')],
+```
+
+Adds animation utilities:
+
+```jsx
+<div className="animate-fade-in">
+  Fades in on mount
+</div>
+
+<div className="animate-slide-up">
+  Slides up on mount
+</div>
+```
+
+## Component-Specific Styling
+
+### Hover Effects
+
+Example from SkillsTableSection:
+
+```jsx src/components/About/SkillsTableSection.jsx:44-60
+const skills = [
+  {
+    label: 'C++',
+    icon: CppIcon,
+    css: 'hover:bg-[#00599c] hover:text-[#f5f5f7]',
+  },
+  {
+    label: 'Python',
+    icon: PythonIcon,
+    css: 'hover:bg-[#3670a0] hover:text-[#f5f5f7]',
+  },
+  {
+    label: 'Next.js',
+    icon: NextjsIcon,
+    css: 'hover:bg-[#000000] hover:text-[#f5f5f7]',
+  },
+  // ...
+];
+```
+
+Each skill has a custom hover color matching the technology's brand:
+
+```jsx src/components/About/SkillsTableSection.jsx:186-190
+<td className={`
+  border-[1px] 
+  border-[var(--border-default)] 
+  transition-all duration-300 
+  ${skill.css}
+`}>
+```
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Use CSS Variables" icon="code">
+    Always use `var(--variable-name)` for colors that should adapt to themes
+  </Card>
+  <Card title="Consistent Spacing" icon="ruler">
+    Use Tailwind's spacing scale (p-5, m-5, etc.) for consistency
+  </Card>
+  <Card title="Responsive First" icon="mobile">
+    Start with mobile styles, then add breakpoint prefixes for larger screens
+  </Card>
+  <Card title="Transitions" icon="arrows-spin">
+    Add `transition-all duration-300` for smooth hover effects
+  </Card>
+</CardGroup>
+
+## Styling Checklist
+
+When styling a new component:
+
+- [ ] Use `var(--border-default)` for borders
+- [ ] Use `var(--surface)` for section backgrounds
+- [ ] Use `var(--foreground)` for text (or rely on inherited color)
+- [ ] Apply `rounded-[25px]` for section corners
+- [ ] Add responsive classes with `md:` and `lg:` prefixes
+- [ ] Include smooth transitions for interactive elements
+- [ ] Test in both light and dark modes
+
+## Related Documentation
+
+<CardGroup cols={3}>
+  <Card title="Components" icon="puzzle-piece" href="/structure/components">
+    Learn how components use these styles
+  </Card>
+  <Card title="Customizing Theme" icon="palette" href="/guides/customizing-theme">
+    Advanced theming and customization
+  </Card>
+  <Card title="Tailwind Docs" icon="book" href="https://tailwindcss.com">
+    Official Tailwind CSS documentation
+  </Card>
+</CardGroup>

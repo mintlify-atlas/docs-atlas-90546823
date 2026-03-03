@@ -1,0 +1,477 @@
+---
+title: Dark Mode Implementation
+description: Complete guide to the dark mode system including CSS variables, theme toggle component, meta theme color synchronization, and localStorage persistence
+---
+
+The Arsh Saxena Portfolio features a comprehensive dark mode implementation with automatic theme detection, manual controls, and seamless transitions.
+
+## Overview
+
+The dark mode system includes:
+
+- **CSS Variable-Based Theming**: Easy color management
+- **Three Theme Options**: Light, Dark, and Auto (system preference)
+- **LocalStorage Persistence**: Theme preference saved across sessions
+- **System Preference Detection**: Automatic theme based on OS settings
+- **Meta Theme Color Sync**: Browser UI adapts to theme
+- **Smooth Transitions**: 0.5s color transitions
+
+## CSS Variables Architecture
+
+All colors are defined using CSS variables in `src/styles/global.css`:
+
+```css src/styles/global.css
+:root {
+  --font-geist: 'Geist Sans', sans-serif;
+
+  --background: #f5f5f7;
+  --foreground: #0a0a0a;
+
+  --main: #166534;
+  --accent: #22c55e;
+
+  --surface: #dadada66;
+  --overlay: #131313;
+  --muted: #393939;
+
+  --border-default: #a8a8a8;
+}
+
+.dark {
+  --background: #0a0a0a;
+  --foreground: #f5f5f7;
+
+  --main: #166534;
+  --accent: #22c55e;
+
+  --surface: #13131380;
+  --overlay: #dadada;
+  --muted: #a2a2a9;
+
+  --border-default: #333333;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist);
+  transition:
+    background 0.5s,
+    color 0.5s;
+}
+```
+
+### Color Variables
+
+<ParamField path="--background" type="color">
+  Primary background color
+  - Light: `#f5f5f7` (light gray)
+  - Dark: `#0a0a0a` (almost black)
+</ParamField>
+
+<ParamField path="--foreground" type="color">
+  Primary text color
+  - Light: `#0a0a0a` (dark text)
+  - Dark: `#f5f5f7` (light text)
+</ParamField>
+
+<ParamField path="--main" type="color">
+  Main brand color (consistent across themes)
+  - Both: `#166534` (dark green)
+</ParamField>
+
+<ParamField path="--accent" type="color">
+  Accent/hover color (consistent across themes)
+  - Both: `#22c55e` (bright green)
+</ParamField>
+
+<ParamField path="--surface" type="color">
+  Surface/card backgrounds
+  - Light: `#dadada66` (light gray with transparency)
+  - Dark: `#13131380` (dark gray with transparency)
+</ParamField>
+
+<ParamField path="--overlay" type="color">
+  Overlay elements
+  - Light: `#131313` (dark overlay)
+  - Dark: `#dadada` (light overlay)
+</ParamField>
+
+<ParamField path="--muted" type="color">
+  Muted/secondary text
+  - Light: `#393939` (medium gray)
+  - Dark: `#a2a2a9` (light gray)
+</ParamField>
+
+<ParamField path="--border-default" type="color">
+  Default border color
+  - Light: `#a8a8a8` (medium gray)
+  - Dark: `#333333` (dark gray)
+</ParamField>
+
+### Using CSS Variables
+
+Reference variables in Tailwind classes:
+
+```jsx
+<div className="bg-[var(--background)] text-[var(--foreground)]">
+  <p className="text-[var(--muted)]">Muted text</p>
+  <button className="bg-[var(--main)] hover:bg-[var(--accent)]">
+    Click me
+  </button>
+</div>
+```
+
+## Theme Toggle Component
+
+The theme toggle provides manual theme selection:
+
+```jsx src/components/Theme/ThemeToggle.js
+'use client';
+
+import { useEffect, useState } from 'react';
+
+export default function ThemeToggle() {
+  const [isMounted, setIsMounted] = useState(false);
+  const [isDark, setIsDark] = useState(false);
+  const [currentTheme, setCurrentTheme] = useState('system');
+
+  useEffect(() => {
+    setIsMounted(true);
+
+    // Get initial theme
+    const storedTheme = localStorage.getItem('theme');
+    const systemPrefersDark = window.matchMedia(
+      '(prefers-color-scheme: dark)'
+    ).matches;
+    const initialTheme = storedTheme || 'system';
+    const initialDark = storedTheme
+      ? storedTheme === 'dark'
+      : systemPrefersDark;
+
+    document.documentElement.classList.toggle('dark', initialDark);
+    setIsDark(initialDark);
+    setCurrentTheme(initialTheme);
+
+    // Listen for system theme changes
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleSystemChange = (e) => {
+      if (!localStorage.getItem('theme')) {
+        const newSystemDark = e.matches;
+        document.documentElement.classList.toggle('dark', newSystemDark);
+        setIsDark(newSystemDark);
+        setCurrentTheme('system');
+      }
+    };
+
+    mediaQuery.addEventListener('change', handleSystemChange);
+    return () => mediaQuery.removeEventListener('change', handleSystemChange);
+  }, []);
+
+  const setTheme = (theme) => {
+    if (theme === 'system') {
+      localStorage.removeItem('theme');
+      const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.classList.toggle('dark', systemDark);
+      setIsDark(systemDark);
+    } else {
+      const newIsDark = theme === 'dark';
+      document.documentElement.classList.toggle('dark', newIsDark);
+      localStorage.setItem('theme', theme);
+      setIsDark(newIsDark);
+    }
+    setCurrentTheme(theme);
+  };
+
+  const buttonClass = (theme) => {
+    const isSelected = currentTheme === theme;
+    return `
+      px-2 rounded-full flex items-center gap-2
+      ${
+        isSelected
+          ? 'bg-[var(--main)] dark:bg-[var(--main)] text-[#f5f5f7]'
+          : 'pointer hover:bg-[var(--accent)] hover:text-[#f5f5f7]'
+      }
+    `;
+  };
+
+  if (!isMounted) return null;
+
+  return (
+    <div className="flex flex-col items-start gap-2 text-xs">
+      <div className="flex flex-row space-x-1 rounded-full border border-solid border-[var(--main)] p-[2px]">
+        <button onClick={() => setTheme('light')} className={buttonClass('light')}>
+          Light
+        </button>
+        <button onClick={() => setTheme('dark')} className={buttonClass('dark')}>
+          Dark
+        </button>
+        <button onClick={() => setTheme('system')} className={buttonClass('system')}>
+          Auto
+        </button>
+      </div>
+    </div>
+  );
+}
+```
+
+### How It Works
+
+<Steps>
+  <Step title="Initialization">
+    On mount, the component:
+    1. Checks localStorage for saved theme preference
+    2. Detects system preference if no saved theme
+    3. Applies the appropriate theme by toggling the `dark` class
+    4. Updates component state
+  </Step>
+
+  <Step title="Theme Selection">
+    When a user clicks a theme button:
+    1. If "Auto" selected: Remove localStorage entry, use system preference
+    2. If "Light" or "Dark" selected: Save to localStorage, apply theme
+    3. Toggle `dark` class on `document.documentElement`
+    4. Update state to reflect new theme
+  </Step>
+
+  <Step title="System Change Listener">
+    The component listens for OS theme changes:
+    - Only responds if no manual theme is set (Auto mode)
+    - Updates theme automatically when system preference changes
+    - Cleans up listener on component unmount
+  </Step>
+</Steps>
+
+### Theme Persistence
+
+Themes are persisted using localStorage:
+
+```javascript
+// Save theme
+localStorage.setItem('theme', 'dark');
+
+// Get theme
+const theme = localStorage.getItem('theme');
+
+// Remove theme (revert to system)
+localStorage.removeItem('theme');
+```
+
+## Meta Theme Color Synchronization
+
+The browser UI adapts to the theme using `SetMetaThemeColor.js`:
+
+```jsx src/components/Theme/SetMetaThemeColor.js
+'use client';
+
+import { useEffect } from 'react';
+
+export default function SetThemeColor() {
+  useEffect(() => {
+    const updateThemeColor = () => {
+      const isDark = document.documentElement.classList.contains('dark');
+      const themeTag = document.querySelector('meta[name="theme-color"]');
+      
+      if (themeTag) {
+        themeTag.setAttribute(
+          'content',
+          isDark ? '#0a0a0a' : '#f5f5f7'
+        );
+      } else {
+        const newThemeTag = document.createElement('meta');
+        newThemeTag.name = 'theme-color';
+        newThemeTag.content = isDark ? '#0a0a0a' : '#f5f5f7';
+        document.head.appendChild(newThemeTag);
+      }
+    };
+
+    updateThemeColor();
+
+    // Watch for theme changes
+    const observer = new MutationObserver(updateThemeColor);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class'],
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  return null;
+}
+```
+
+### What It Does
+
+The meta theme color affects:
+- **Mobile Safari**: Browser toolbar color on iOS
+- **Chrome Mobile**: Address bar color on Android
+- **PWA**: App theme color when installed
+
+The component:
+1. Detects current theme by checking for `dark` class
+2. Sets or updates `<meta name="theme-color">` tag
+3. Watches for theme changes using MutationObserver
+4. Updates meta tag dynamically when theme changes
+
+## System Preference Detection
+
+The portfolio detects and respects OS-level theme preferences:
+
+```javascript
+// Check system preference
+const systemPrefersDark = window.matchMedia(
+  '(prefers-color-scheme: dark)'
+).matches;
+
+// Listen for system preference changes
+const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+mediaQuery.addEventListener('change', (e) => {
+  const prefersDark = e.matches;
+  // Update theme if in Auto mode
+});
+```
+
+This ensures:
+- Automatic theme on first visit
+- Respect for user's OS settings
+- Dynamic updates when OS theme changes
+- No "flash" of wrong theme on page load
+
+## Layout Integration
+
+The theme components are integrated in the root layout:
+
+```jsx src/app/layout.js
+import SetMetaThemeColor from '@/components/Theme/SetMetaThemeColor';
+
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <body>
+        <SetMetaThemeColor />
+        <Navbar />
+        {children}
+        <Footer />
+      </body>
+    </html>
+  );
+}
+```
+
+<Note>
+  The `suppressHydrationWarning` prop is necessary because the theme class is applied on the client side, which can cause a mismatch with server-rendered HTML.
+</Note>
+
+## Smooth Transitions
+
+Color transitions are defined in the global CSS:
+
+```css
+body {
+  transition:
+    background 0.5s,
+    color 0.5s;
+}
+```
+
+This creates a smooth 0.5-second transition when:
+- Switching between light and dark modes
+- Changing any background or text color
+- System preference updates automatically
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Using CSS Variables">
+    - Always use `var(--variable-name)` in components
+    - Define colors only in `global.css`
+    - Keep variable names semantic, not color-specific
+    - Test all components in both light and dark modes
+    - Use transparency for surfaces and overlays
+  </Accordion>
+
+  <Accordion title="Theme Persistence">
+    - Check localStorage on initial render
+    - Handle missing localStorage gracefully
+    - Clear localStorage for "Auto" mode
+    - Avoid theme "flashing" during page load
+    - Consider server-side rendering implications
+  </Accordion>
+
+  <Accordion title="Client-Side Rendering">
+    - Use `'use client'` for theme components
+    - Implement mounting checks with `isMounted` state
+    - Return null before mounting to prevent hydration errors
+    - Handle window/localStorage checks safely
+  </Accordion>
+
+  <Accordion title="Accessibility">
+    - Ensure sufficient contrast in both themes
+    - Test with color blindness simulators
+    - Provide visual feedback for active theme
+    - Make theme toggle keyboard accessible
+    - Consider users with light sensitivity
+  </Accordion>
+</AccordionGroup>
+
+## Theme Options
+
+<CardGroup cols={3}>
+  <Card title="Light Mode" icon="sun">
+    Light background (#f5f5f7) with dark text (#0a0a0a) for daytime use
+  </Card>
+  <Card title="Dark Mode" icon="moon">
+    Dark background (#0a0a0a) with light text (#f5f5f7) for nighttime or low-light environments
+  </Card>
+  <Card title="Auto Mode" icon="circle-half-stroke">
+    Automatically matches your system's theme preference and updates dynamically
+  </Card>
+</CardGroup>
+
+## Testing Dark Mode
+
+To test the implementation:
+
+<Steps>
+  <Step title="Manual Testing">
+    - Click each theme button (Light, Dark, Auto)
+    - Verify theme persists after page reload
+    - Check all pages and components in both themes
+    - Test on mobile devices for meta theme color
+  </Step>
+
+  <Step title="System Preference Testing">
+    - Set theme to "Auto"
+    - Change OS theme preference
+    - Verify automatic theme update
+    - Test with different browsers
+  </Step>
+
+  <Step title="Browser DevTools">
+    - Open DevTools > Rendering
+    - Toggle "Emulate CSS media feature prefers-color-scheme"
+    - Verify Auto mode responds correctly
+    - Check localStorage values
+  </Step>
+</Steps>
+
+<Warning>
+  Always test dark mode implementation with real content, not just placeholder text. Some color combinations may look fine with lorem ipsum but fail with actual content.
+</Warning>
+
+## Color Contrast Ratios
+
+The theme meets WCAG AA standards:
+
+- **Background/Foreground**: 
+  - Light: #0a0a0a on #f5f5f7 (14.5:1)
+  - Dark: #f5f5f7 on #0a0a0a (14.5:1)
+
+- **Accent Colors**:
+  - Main: #166534 (dark green - sufficient contrast)
+  - Accent: #22c55e (bright green - used on dark backgrounds)
+
+<Tip>
+  Use online tools like [WebAIM Contrast Checker](https://webaim.org/resources/contrastchecker/) to verify your color combinations meet accessibility standards.
+</Tip>

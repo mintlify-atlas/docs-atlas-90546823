@@ -1,0 +1,268 @@
+---
+title: Adding Projects
+description: Step-by-step guide to add new web projects to your portfolio
+---
+
+This guide shows you how to add new projects to your portfolio's "Made by Arsh" section.
+
+## Project Structure Overview
+
+Projects are managed in `src/data/webProjectsBase.js`, which exports an object containing all project information. Each project includes metadata, images, and links.
+
+## Adding a New Project
+
+<Steps>
+  <Step title="Prepare your project assets">
+    Before adding a project, prepare the following:
+
+    <AccordionGroup>
+      <Accordion title="Project Icon (Required)">
+        - **Format**: WebP (recommended) or PNG
+        - **Size**: Square aspect ratio (e.g., 512x512px)
+        - **Location**: `/public/made-by-arsh/web-projects/icons/`
+        - **Naming**: `your-project-icon.webp`
+      </Accordion>
+
+      <Accordion title="Project Screenshot (Required)">
+        - **Format**: WebP (recommended) or PNG
+        - **Size**: Desktop screenshot (e.g., 1920x1080px or similar)
+        - **Location**: `/public/made-by-arsh/web-projects/imgs/`
+        - **Naming**: `your-project.webp`
+      </Accordion>
+    </AccordionGroup>
+  </Step>
+
+  <Step title="Upload your images">
+    Place your prepared images in the appropriate directories:
+
+    ```bash
+    # Navigate to your project directory
+    cd your-portfolio-project
+
+    # Add icon
+    cp your-icon.webp public/made-by-arsh/web-projects/icons/
+
+    # Add screenshot
+    cp your-screenshot.webp public/made-by-arsh/web-projects/imgs/
+    ```
+  </Step>
+
+  <Step title="Open the projects database">
+    Open `src/data/webProjectsBase.js` in your code editor.
+  </Step>
+
+  <Step title="Add your project entry">
+    Add a new entry to the `webProjectsBase` object. Use a unique key (slug) for your project:
+
+    ```js src/data/webProjectsBase.js
+    export const webProjectsBase = {
+      // ... existing projects ...
+      
+      yourproject: {
+        label: 'Your Project Name',
+        tagLine: 'Short catchy tagline.',
+        desc1: 'Brief one-line description.',
+        desc2: 'More detailed description with key features and purpose.',
+        href: 'https://yourproject.com/',
+        icon: '/made-by-arsh/web-projects/icons/yourproject-icon.webp',
+        img: '/made-by-arsh/web-projects/imgs/yourproject.webp',
+        target: '_blank',
+      },
+    };
+    ```
+  </Step>
+
+  <Step title="Save and test">
+    Save the file and check your portfolio:
+
+    ```bash
+    npm run dev
+    ```
+
+    Navigate to `/made-by-arsh` to see your new project.
+  </Step>
+</Steps>
+
+## Project Object Reference
+
+Here's a detailed breakdown of each property:
+
+<ParamField path="key" type="string" required>
+  The unique identifier for your project (used in the URL slug). Use lowercase with no spaces.
+  
+  **Example**: `nptelcompanion`, `weatherapp`, `myportfolio`
+</ParamField>
+
+<ParamField path="label" type="string" required>
+  The display name of your project. This appears as the heading.
+  
+  **Example**: `"NPTEL Companion"`, `"Weather App"`, `"My Portfolio"`
+</ParamField>
+
+<ParamField path="tagLine" type="string" required>
+  A short, catchy tagline (3-6 words). Appears below the title.
+  
+  **Example**: `"Free, exam-ready NPTEL practice."`, `"Weather, worldwide."`
+</ParamField>
+
+<ParamField path="desc1" type="string" required>
+  First description line. Keep it concise (1 sentence).
+  
+  **Example**: `"Free, exam-ready NPTEL practice."`
+</ParamField>
+
+<ParamField path="desc2" type="string" required>
+  Second description line with more details about features and benefits.
+  
+  **Example**: `"Prepare with weekly and full-length quizzes from real NPTEL courses."`
+</ParamField>
+
+<ParamField path="href" type="string" required>
+  The URL where your project is hosted.
+  
+  **Example**: `"https://yourproject.com/"`, `"https://yourproject.vercel.app/"`
+</ParamField>
+
+<ParamField path="icon" type="string" required>
+  Path to the project icon relative to `/public`.
+  
+  **Example**: `"/made-by-arsh/web-projects/icons/yourproject-icon.webp"`
+</ParamField>
+
+<ParamField path="img" type="string" required>
+  Path to the project screenshot relative to `/public`.
+  
+  **Example**: `"/made-by-arsh/web-projects/imgs/yourproject.webp"`
+</ParamField>
+
+<ParamField path="target" type="string" required>
+  Link target attribute. Use `"_blank"` to open in a new tab.
+  
+  **Example**: `"_blank"`
+</ParamField>
+
+## Complete Example
+
+Here's a complete example of adding a weather app project:
+
+```js src/data/webProjectsBase.js
+export const webProjectsBase = {
+  nptelcompanion: {
+    label: 'NPTEL Companion',
+    tagLine: 'Free, exam-ready NPTEL practice.',
+    desc1: 'Free, exam-ready NPTEL practice.',
+    desc2: 'Prepare with weekly and full-length quizzes from real NPTEL courses. Designed for efficient revision and last-minute prep.',
+    href: 'https://nptelcompanion.arshsaxena.in/',
+    icon: '/made-by-arsh/web-projects/icons/nptelcompanion-icon.webp',
+    img: '/made-by-arsh/web-projects/imgs/nptelcompanion.webp',
+    target: '_blank',
+  },
+  
+  // Add your new project here
+  weatherapp: {
+    label: 'Weather Dashboard',
+    tagLine: 'Real-time weather data.',
+    desc1: 'Get accurate weather forecasts for any location.',
+    desc2: 'Track temperature, humidity, wind speed, and 7-day forecasts with beautiful visualizations.',
+    href: 'https://weather.yoursite.com/',
+    icon: '/made-by-arsh/web-projects/icons/weatherapp-icon.webp',
+    img: '/made-by-arsh/web-projects/imgs/weatherapp-desktop.webp',
+    target: '_blank',
+  },
+};
+```
+
+## Image Optimization Tips
+
+<Warning>
+  Large image files can slow down your portfolio. Follow these optimization guidelines.
+</Warning>
+
+### Icon Images
+- **Recommended size**: 512x512px
+- **Maximum file size**: 100KB
+- **Format**: WebP (best compression) or PNG
+- **Optimization**: Use tools like [Squoosh](https://squoosh.app) or [TinyPNG](https://tinypng.com)
+
+### Screenshot Images
+- **Recommended size**: 1920x1080px or 1600x900px
+- **Maximum file size**: 200KB
+- **Format**: WebP (best compression) or PNG
+- **Optimization**: Compress to 80-90% quality
+
+### Converting to WebP
+
+You can convert images to WebP using online tools or command line:
+
+```bash
+# Using cwebp (install via brew or apt)
+cwebp -q 85 input.png -o output.webp
+
+# Batch convert all PNGs in a directory
+for file in *.png; do cwebp -q 85 "$file" -o "${file%.png}.webp"; done
+```
+
+## Reordering Projects
+
+Projects appear in the order they're defined in `webProjectsBase.js`. To reorder:
+
+1. Open `src/data/webProjectsBase.js`
+2. Cut and paste entire project objects to reorder them
+3. The first project in the object appears first on the page
+
+<Tip>
+  Place your most important or recent projects at the top of the file.
+</Tip>
+
+## Removing Projects
+
+To remove a project:
+
+<Steps>
+  <Step title="Delete the project entry">
+    Remove the entire project object from `src/data/webProjectsBase.js`.
+  </Step>
+
+  <Step title="(Optional) Delete images">
+    Delete the associated icon and screenshot files from `/public/made-by-arsh/web-projects/`.
+  </Step>
+
+  <Step title="Verify">
+    Run `npm run dev` and check that the project no longer appears.
+  </Step>
+</Steps>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Images not displaying">
+    - Verify the file paths are correct (case-sensitive)
+    - Ensure images are in the `/public` directory
+    - Check that image files have the correct extensions (.webp, .png)
+    - Clear your browser cache and reload
+  </Accordion>
+
+  <Accordion title="Project not appearing">
+    - Check for syntax errors in `webProjectsBase.js` (missing commas, brackets)
+    - Ensure all required properties are present
+    - Restart the development server (`npm run dev`)
+  </Accordion>
+
+  <Accordion title="Build fails">
+    - Verify the JavaScript object syntax is correct
+    - Check that all strings are properly quoted
+    - Look for missing commas between properties
+    - Run `npm run build` to see detailed error messages
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Customize Theme" icon="palette" href="/guides/customizing-theme">
+    Change colors and visual appearance
+  </Card>
+  <Card title="Deploy Your Site" icon="rocket" href="/guides/deployment">
+    Deploy your portfolio to production
+  </Card>
+</CardGroup>

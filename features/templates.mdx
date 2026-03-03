@@ -1,0 +1,407 @@
+---
+title: Web Templates System
+description: Learn how the web templates feature works, including template data structure, dynamic routing, download functionality, and how to add new templates
+---
+
+The web templates system allows users to browse, preview, and download reusable web templates. Each template has its own detailed page with screenshots, features, and download capabilities.
+
+## Overview
+
+The templates system provides:
+
+- **Centralized Template Data**: All template information in one file
+- **Dynamic Template Pages**: Automatic page generation for each template
+- **Interactive Slideshows**: Navigate through multiple screenshots
+- **Download Functionality**: Direct download links with file size info
+- **Responsive Design**: Mobile-friendly template previews
+
+## Data Structure
+
+All template data is defined in `src/data/webTemplatesBase.js`:
+
+```javascript src/data/webTemplatesBase.js
+export const rawTemplateData = [
+  {
+    slug: 'simple-old-school',
+    name: 'Simple Old School',
+    screenshots: [
+      {
+        src: '/made-by-arsh/web-templates/simple-old-school/template-screenshot-1.webp',
+        caption: 'Home',
+      },
+      {
+        src: '/made-by-arsh/web-templates/simple-old-school/template-screenshot-2.webp',
+        caption: 'Gallery',
+      },
+      {
+        src: '/made-by-arsh/web-templates/simple-old-school/template-screenshot-3.webp',
+        caption: 'GitHub',
+      },
+      {
+        src: '/made-by-arsh/web-templates/simple-old-school/template-screenshot-4.webp',
+        caption: 'Error 404',
+      },
+    ],
+    desc: 'A classic, easy-to-read HTML/CSS website with retro styling, basic navigation, and a custom 404 page.',
+    features: [
+      'Built with HTML and CSS',
+      '2-items navigation bar',
+      'Good readability',
+      'Back button on pages',
+      'Social media links',
+      'Custom Error 404 page',
+      'Custom scrollbar',
+    ],
+    fileName: 'Simple-Old-School-by-Arsh.zip',
+    size: '2.12MB',
+    downloadLink: '/download/Simple-Old-School-by-Arsh.zip',
+    css: 'border-b-[1px] md:border-r-[1px] border-[var(--border-default)]',
+  },
+  // Additional templates...
+];
+
+// Automatically add href for internal routing
+export const templateData = rawTemplateData.map((item) => ({
+  ...item,
+  href: `/made-by-arsh/templates/${item.slug}`,
+}));
+```
+
+### Template Object Properties
+
+<ParamField path="slug" type="string" required>
+  URL-friendly identifier used in the template page route
+</ParamField>
+
+<ParamField path="name" type="string" required>
+  Display name of the template
+</ParamField>
+
+<ParamField path="screenshots" type="array" required>
+  Array of screenshot objects with `src` and `caption` properties
+</ParamField>
+
+<ParamField path="desc" type="string" required>
+  Brief description of the template
+</ParamField>
+
+<ParamField path="features" type="array" required>
+  List of template features displayed as bullet points
+</ParamField>
+
+<ParamField path="fileName" type="string" required>
+  Name of the downloadable ZIP file
+</ParamField>
+
+<ParamField path="size" type="string" required>
+  File size displayed on the download button
+</ParamField>
+
+<ParamField path="downloadLink" type="string" required>
+  Path to the downloadable file (relative to `/public`)
+</ParamField>
+
+<ParamField path="css" type="string">
+  Custom CSS classes for grid layout borders
+</ParamField>
+
+## Dynamic Template Pages
+
+Each template automatically gets its own page using Next.js dynamic routing:
+
+```javascript src/app/made-by-arsh/templates/[slug]/page.js
+import { templateData } from '@/data/webTemplatesBase';
+import TemplateContent from './TemplateContent';
+import { notFound } from 'next/navigation';
+
+export function generateMetadata({ params }) {
+  const template = templateData.find((t) => t.slug === params.slug);
+  return {
+    title: `${template.name} | Made by Arsh | Arsh Saxena`,
+    description: `${template.name} template made by Arsh. ${template.desc}`,
+  };
+}
+
+export default function TemplatePage({ params }) {
+  const template = templateData.find((t) => t.slug === params.slug);
+  if (!template) return notFound();
+
+  return <TemplateContent template={template} />;
+}
+```
+
+### URL Structure
+
+Templates are accessible at:
+```
+/made-by-arsh/templates/[slug]
+```
+
+For example:
+- `/made-by-arsh/templates/simple-old-school`
+- `/made-by-arsh/templates/apple-style-navigation-bar`
+- `/made-by-arsh/templates/modern-footer`
+
+## Template Content Component
+
+The `TemplateContent.js` component renders individual template pages:
+
+```jsx src/app/made-by-arsh/templates/[slug]/TemplateContent.js
+'use client';
+
+import React, { useState } from 'react';
+import Image from 'next/image';
+import { Download, ChevronLeft, ChevronRight } from 'lucide-react';
+
+const Slideshow = ({ screenshots }) => {
+  const [current, setCurrent] = useState(0);
+
+  const nextSlide = () => setCurrent((current + 1) % screenshots.length);
+  const prevSlide = () =>
+    setCurrent((current - 1 + screenshots.length) % screenshots.length);
+
+  const { src, caption } = screenshots[current];
+
+  return (
+    <div className="relative mb-6 w-full">
+      <Image
+        src={src}
+        alt={caption}
+        width={800}
+        height={600}
+        className="h-auto w-full rounded-[15px] border-[1px] border-[var(--border-default)]"
+      />
+      <div className="absolute bottom-2 left-2 rounded-full bg-black bg-opacity-50 px-2 py-1 text-xs text-white">
+        {caption}
+      </div>
+      {screenshots.length > 1 && (
+        <>
+          <button onClick={prevSlide}>
+            <ChevronLeft size={18} />
+          </button>
+          <button onClick={nextSlide}>
+            <ChevronRight size={18} />
+          </button>
+        </>
+      )}
+    </div>
+  );
+};
+
+export default function TemplateContent({ template }) {
+  return (
+    <div className="m-auto max-w-[980px]">
+      <div className="text-md mx-5 my-10 rounded-[25px] border-[1px] bg-[var(--surface)] p-5">
+        <div className="mb-6 text-3xl font-bold">{template.name}</div>
+        <div className="mb-6 text-[var(--muted-foreground)]">{template.desc}</div>
+        
+        <Slideshow screenshots={template.screenshots} />
+        
+        <div className="mb-2 text-2xl font-bold">Features</div>
+        <ul className="text-md mb-6 list-inside list-disc">
+          {template.features.map((f, idx) => (
+            <li key={idx} className="mb-2">{f}</li>
+          ))}
+        </ul>
+        
+        <a
+          href={template.downloadLink}
+          download
+          className="flex w-fit items-center rounded-full border-[1px] border-[var(--accent)] bg-[var(--main)] px-4 py-2 text-sm text-[#f5f5f7] hover:bg-[var(--accent)]"
+        >
+          <Download className="mr-1 h-4" />
+          <div>Download ({template.size})</div>
+        </a>
+      </div>
+    </div>
+  );
+}
+```
+
+### Slideshow Component
+
+The interactive slideshow allows users to:
+- Navigate between screenshots using arrow buttons
+- See captions for each screenshot
+- View full-size previews with proper aspect ratios
+
+## Templates Grid Section
+
+The templates overview is displayed using `WebTemplatesSection.jsx`:
+
+```jsx src/components/MadeByArsh/WebTemplatesSection.jsx
+import { templateData } from '@/data/webTemplatesBase';
+
+export function WebTemplates() {
+  return (
+    <div className="rounded-[25px] bg-[var(--surface)]">
+      <div className="rounded-t-[25px] border-b-[1px] border-[var(--border-default)] p-5 text-3xl font-black">
+        Web Templates
+      </div>
+      <BentoGrid>
+        {templateData.map((item, i) => (
+          <BentoGridItem
+            key={i}
+            slug={item.slug}
+            name={item.name}
+            href={item.href}
+            screenshots={item.screenshots}
+            desc={item.desc}
+            features={item.features}
+            css={item.css}
+          />
+        ))}
+      </BentoGrid>
+    </div>
+  );
+}
+```
+
+Each grid item displays:
+1. Slideshow preview
+2. Template name
+3. Description
+4. Feature list
+5. "Check Out" link to the template page
+
+## Download Functionality
+
+Template downloads work through simple file serving:
+
+<Steps>
+  <Step title="Place ZIP Files">
+    Store template ZIP files in `/public/download/`:
+    ```
+    /public/download/Simple-Old-School-by-Arsh.zip
+    /public/download/Apple-Style-Navigation-Bar-by-Arsh.zip
+    /public/download/Modern-Footer.zip
+    ```
+  </Step>
+
+  <Step title="Reference in Data">
+    Set the `downloadLink` property to the public path:
+    ```javascript
+    downloadLink: '/download/Simple-Old-School-by-Arsh.zip',
+    ```
+  </Step>
+
+  <Step title="Download Button">
+    The download button uses a standard `<a>` tag with `download` attribute:
+    ```jsx
+    <a href={template.downloadLink} download>
+      Download ({template.size})
+    </a>
+    ```
+  </Step>
+</Steps>
+
+## Adding New Templates
+
+To add a new template to the portfolio:
+
+<Steps>
+  <Step title="Prepare Template Files">
+    - Create your template (HTML, CSS, JavaScript, assets)
+    - Package as a ZIP file
+    - Place in `/public/download/`
+  </Step>
+
+  <Step title="Create Screenshots">
+    - Capture screenshots of key pages/features
+    - Save as WebP images in `/public/made-by-arsh/web-templates/[template-name]/`
+    - Use descriptive filenames (template-screenshot-1.webp, etc.)
+  </Step>
+
+  <Step title="Add to Data File">
+    Add template object to `rawTemplateData` array:
+
+    ```javascript
+    {
+      slug: 'my-template',
+      name: 'My Awesome Template',
+      screenshots: [
+        {
+          src: '/made-by-arsh/web-templates/my-template/screenshot-1.webp',
+          caption: 'Homepage',
+        },
+        {
+          src: '/made-by-arsh/web-templates/my-template/screenshot-2.webp',
+          caption: 'About Page',
+        },
+      ],
+      desc: 'A brief description of what this template does.',
+      features: [
+        'Built with HTML, CSS, and JavaScript',
+        'Fully responsive',
+        'Dark mode support',
+        'Smooth animations',
+      ],
+      fileName: 'My-Awesome-Template.zip',
+      size: '1.5MB',
+      downloadLink: '/download/My-Awesome-Template.zip',
+      css: 'border-b-[1px] md:border-r-[1px] border-[var(--border-default)]',
+    }
+    ```
+  </Step>
+
+  <Step title="Test the Template">
+    - Visit `/made-by-arsh/templates/my-template`
+    - Verify slideshow works
+    - Test download button
+    - Check responsive layout
+  </Step>
+</Steps>
+
+## Available Templates
+
+<CardGroup cols={3}>
+  <Card title="Simple Old School" icon="desktop">
+    Classic HTML/CSS website with retro styling and custom 404 page
+  </Card>
+  <Card title="Apple Style Nav" icon="bars">
+    Sleek, responsive navigation bar inspired by Apple's design
+  </Card>
+  <Card title="Modern Footer" icon="footer">
+    Minimal footer with live clock and responsive layout
+  </Card>
+</CardGroup>
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Template Packaging">
+    - Include a README.md with setup instructions
+    - Organize files in a clear folder structure
+    - Include all necessary assets (images, fonts, etc.)
+    - Remove unnecessary development files
+    - Test the ZIP file before publishing
+  </Accordion>
+
+  <Accordion title="Screenshot Guidelines">
+    - Capture at 1200px+ width for clarity
+    - Show the most important/unique features
+    - Include captions that describe each view
+    - Optimize images (WebP format recommended)
+    - Maintain consistent aspect ratios
+  </Accordion>
+
+  <Accordion title="Feature Lists">
+    - List the most important features first
+    - Be specific about technologies used
+    - Highlight unique or standout features
+    - Keep each feature description brief
+    - Use 4-7 features for optimal readability
+  </Accordion>
+
+  <Accordion title="Slug Naming">
+    - Use lowercase letters only
+    - Separate words with hyphens
+    - Keep it short but descriptive
+    - Match the template name conceptually
+    - Avoid special characters
+  </Accordion>
+</AccordionGroup>
+
+<Warning>
+  After adding a new template, ensure the slug is unique and doesn't conflict with existing templates. The dynamic routing system requires unique slugs to function properly.
+</Warning>

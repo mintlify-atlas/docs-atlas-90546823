@@ -1,0 +1,293 @@
+---
+title: Web Projects System
+description: Learn how the web projects showcase feature works, including data structure, project cards, and how to add new projects
+---
+
+The Arsh Saxena Portfolio includes a comprehensive web projects showcase system that displays portfolio projects in an attractive bento grid layout.
+
+## Overview
+
+The web projects system features:
+
+- **Centralized Data Structure**: All project data is managed in a single file
+- **Bento Grid Layout**: Responsive 2-column grid design
+- **Rich Project Cards**: Each project displays screenshots, descriptions, and links
+- **External Linking**: Direct links to live projects
+
+## Data Structure
+
+All web project data is stored in `src/data/webProjectsBase.js`:
+
+```javascript src/data/webProjectsBase.js
+export const webProjectsBase = {
+  nptelcompanion: {
+    label: 'NPTEL Companion',
+    tagLine: 'Free, exam-ready NPTEL practice.',
+    desc1: 'Free, exam-ready NPTEL practice.',
+    desc2: 'Prepare with weekly and full-length quizzes from real NPTEL courses. Designed for efficient revision and last-minute prep.',
+    href: 'https://nptelcompanion.arshsaxena.in/',
+    icon: '/made-by-arsh/web-projects/icons/nptelcompanion-icon.webp',
+    img: '/made-by-arsh/web-projects/imgs/nptelcompanion.webp',
+    target: '_blank',
+  },
+  aeducational: {
+    label: 'aEducational by Arsh',
+    tagLine: 'Free, quality educational content.',
+    desc1: 'Free, quality educational content.',
+    desc2: 'Get letters, essays, notices, speeches, debates, and paragraphs - all written by me. Perfect for students and learners.',
+    href: 'https://education.arshsaxena.in/',
+    icon: '/made-by-arsh/web-projects/icons/aeducational-icon.webp',
+    img: '/made-by-arsh/web-projects/imgs/aeducational-desktop.webp',
+    target: '_blank',
+  },
+  // Additional projects...
+};
+```
+
+### Project Object Properties
+
+<ParamField path="label" type="string" required>
+  The project name displayed as the heading
+</ParamField>
+
+<ParamField path="tagLine" type="string" required>
+  Short, catchy description for quick scanning
+</ParamField>
+
+<ParamField path="desc1" type="string" required>
+  Primary description paragraph
+</ParamField>
+
+<ParamField path="desc2" type="string" required>
+  Secondary description paragraph with more details
+</ParamField>
+
+<ParamField path="href" type="string" required>
+  URL to the live project
+</ParamField>
+
+<ParamField path="icon" type="string" required>
+  Path to the project icon (30x30px or 35x35px recommended)
+</ParamField>
+
+<ParamField path="img" type="string" required>
+  Path to the project screenshot/preview image
+</ParamField>
+
+<ParamField path="target" type="string">
+  Link target attribute (typically `_blank` for external projects)
+</ParamField>
+
+## Component Architecture
+
+The web projects are rendered using the `WebProjectsSection.jsx` component:
+
+```jsx src/components/MadeByArsh/WebProjectsSection.jsx
+import { webProjectsBase } from '@/data/webProjectsBase';
+
+const items = [
+  {
+    ...webProjectsBase.nptelcompanion,
+    css: 'border-[1px] border-[var(--border-default)] border-b-0 md:border-r-0',
+  },
+  {
+    ...webProjectsBase.aeducational,
+    css: 'border-[1px] border-[var(--border-default)] border-b-0',
+  },
+  // More items...
+];
+
+export function WebProjects() {
+  return (
+    <div>
+      <div className="rounded-t-[25px] border-[1px] border-b-0 border-[var(--border-default)] p-5 text-3xl font-black">
+        Web Projects
+      </div>
+      <BentoGrid className="mx-auto md:auto-rows-[20rem]">
+        {items.map((item, i) => (
+          <BentoGridItem
+            key={i}
+            icon={item.icon}
+            label={item.label}
+            desc1={item.desc1}
+            desc2={item.desc2}
+            href={item.href}
+            img={item.img}
+            css={item.css}
+          />
+        ))}
+      </BentoGrid>
+    </div>
+  );
+}
+```
+
+### BentoGridItem Component
+
+Each project card displays:
+
+1. **Project Screenshot**: Full-width preview image with border
+2. **Icon & Label**: Project icon and name in a flex layout
+3. **Descriptions**: Two paragraphs of project details
+4. **Call-to-Action**: "Check Out" button linking to live project
+
+```jsx
+export const BentoGridItem = ({ icon, label, desc1, desc2, href, img, css }) => {
+  return (
+    <div className={`row-span-1 flex h-full flex-col space-y-5 p-5 text-[var(--foreground)] ${css}`}>
+      <div className="w-full md:w-full">
+        <Image
+          src={img}
+          alt={label}
+          className="h-full w-full rounded-[15px] border-[1px] border-[var(--border-default)]"
+        />
+      </div>
+      <div className="flex h-full w-full flex-col space-y-5">
+        <div className="text-2xl font-bold md:text-3xl">
+          <div className="flex items-start gap-2">
+            <Image src={icon} alt={label} className="h-[30px] w-[30px] rounded-[6.5px]" />
+            {label}
+          </div>
+        </div>
+        <div className="md:text-md space-y-5 text-sm">
+          <div>{desc1}</div>
+          <div>{desc2}</div>
+        </div>
+      </div>
+      <div className="w-fit">
+        <Link href={href} target="_blank">
+          Check Out
+        </Link>
+      </div>
+    </div>
+  );
+};
+```
+
+## Adding New Projects
+
+To add a new project to the portfolio:
+
+<Steps>
+  <Step title="Prepare Assets">
+    Create your project assets:
+    - Icon image (30x30px or 35x35px, WebP format recommended)
+    - Screenshot/preview image (WebP format recommended)
+    - Place in `/public/made-by-arsh/web-projects/`
+  </Step>
+
+  <Step title="Add to Data File">
+    Add your project object to `src/data/webProjectsBase.js`:
+
+    ```javascript
+    export const webProjectsBase = {
+      // Existing projects...
+      myproject: {
+        label: 'My Amazing Project',
+        tagLine: 'One-line description.',
+        desc1: 'First paragraph about the project.',
+        desc2: 'Second paragraph with more details.',
+        href: 'https://myproject.example.com/',
+        icon: '/made-by-arsh/web-projects/icons/myproject-icon.webp',
+        img: '/made-by-arsh/web-projects/imgs/myproject.webp',
+        target: '_blank',
+      },
+    };
+    ```
+  </Step>
+
+  <Step title="Add to Display Array">
+    Add your project to the items array in `WebProjectsSection.jsx`:
+
+    ```javascript
+    const items = [
+      // Existing items...
+      {
+        ...webProjectsBase.myproject,
+        css: 'border-[1px] border-[var(--border-default)]', // Adjust border CSS
+      },
+    ];
+    ```
+  </Step>
+
+  <Step title="Test Display">
+    Run the development server and verify:
+    - Project card appears in the grid
+    - Images load correctly
+    - Link opens to the correct URL
+    - Responsive layout works on mobile
+  </Step>
+</Steps>
+
+<Note>
+  The `css` property in the items array controls borders for the bento grid layout. Projects in the right column typically have `border-r-0` on desktop, and the last row has `border-b-[1px]` instead of `border-b-0`.
+</Note>
+
+## Featured Projects
+
+The portfolio currently showcases these projects:
+
+<CardGroup cols={2}>
+  <Card title="NPTEL Companion" icon="graduation-cap" href="https://nptelcompanion.arshsaxena.in/">
+    Free, exam-ready NPTEL practice with weekly and full-length quizzes
+  </Card>
+  <Card title="aEducational" icon="book" href="https://education.arshsaxena.in/">
+    Quality educational content including letters, essays, and speeches
+  </Card>
+  <Card title="VIT Chennai Faculty Info" icon="users" href="https://vitcfacultyinfo.arshsaxena.in/">
+    Search and filter VIT Chennai faculty members
+  </Card>
+  <Card title="aConverter" icon="arrows-rotate" href="https://converter.arshsaxena.in/">
+    Unit converter for length, mass, temperature, and speed
+  </Card>
+  <Card title="Solar System" icon="planet-ringed" href="https://solarsystem.arshsaxena.in/">
+    Interactive solar system built with HTML, CSS, and JavaScript
+  </Card>
+  <Card title="Colors" icon="palette" href="https://colors.arshsaxena.in/">
+    Random color generator with HEX, RGB, and RGBA values
+  </Card>
+  <Card title="QR Code Generator" icon="qrcode" href="https://qr.arshsaxena.in/">
+    Generate QR codes for text, URLs, phone numbers, and emails
+  </Card>
+  <Card title="Weather" icon="cloud" href="https://weather.arshsaxena.in/">
+    Live weather data for any location worldwide
+  </Card>
+</CardGroup>
+
+## Styling & Theming
+
+Project cards automatically adapt to the site's dark mode using CSS variables:
+
+```css
+.text-[var(--foreground)]  /* Text color */
+.border-[var(--border-default)]  /* Border color */
+.border-[var(--accent)]  /* Accent/hover color */
+.bg-[var(--main)]  /* Button background */
+```
+
+See the [Dark Mode](/features/dark-mode) documentation for more details on theming.
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Image Optimization">
+    - Use WebP format for better compression
+    - Keep icons at 30x30 or 35x35 pixels
+    - Optimize screenshots to reduce file size
+    - Use descriptive alt text for accessibility
+  </Accordion>
+
+  <Accordion title="Content Writing">
+    - Keep tagLine under 50 characters
+    - Make desc1 concise and impactful
+    - Use desc2 for technical details or features
+    - Highlight what makes the project unique
+  </Accordion>
+
+  <Accordion title="Grid Layout">
+    - Projects are displayed in a 2-column grid on desktop
+    - Consider the visual balance when adding projects
+    - Test border CSS to ensure clean grid appearance
+    - Verify mobile responsive layout
+  </Accordion>
+</AccordionGroup>

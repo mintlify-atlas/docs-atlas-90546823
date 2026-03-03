@@ -1,0 +1,689 @@
+---
+title: Installation
+description: Complete installation guide for the Arsh Saxena Portfolio with prerequisites, dependencies, and environment setup
+---
+
+# Installation guide
+
+This comprehensive guide will walk you through setting up the Arsh Saxena Portfolio on your local machine, including all prerequisites, dependencies, and configuration.
+
+<Note>
+Looking for a quick setup? Check out the [Quickstart Guide](/quickstart) to get running in under 5 minutes.
+</Note>
+
+## Prerequisites
+
+Before you begin, ensure your development environment meets these requirements:
+
+### Node.js and npm
+
+The portfolio requires Node.js version 18.x or higher. We recommend using the latest LTS (Long Term Support) version.
+
+<Steps>
+  <Step title="Check your Node.js version">
+    Open your terminal and run:
+
+    ```bash
+    node --version
+    ```
+
+    You should see output like `v18.17.0` or higher.
+  </Step>
+
+  <Step title="Check your npm version">
+    ```bash
+    npm --version
+    ```
+
+    npm 9.x or higher is recommended.
+  </Step>
+
+  <Step title="Install or update Node.js (if needed)">
+    If you need to install or update Node.js, visit [nodejs.org](https://nodejs.org) or use a version manager:
+
+    <CodeGroup>
+      ```bash nvm (recommended)
+      # Install nvm first from https://github.com/nvm-sh/nvm
+      nvm install --lts
+      nvm use --lts
+      ```
+
+      ```bash fnm (fast alternative)
+      # Install fnm first
+      fnm install --lts
+      fnm use lts-latest
+      ```
+
+      ```bash Direct download
+      # Download the installer from https://nodejs.org
+      # Install the LTS version
+      ```
+    </CodeGroup>
+  </Step>
+</Steps>
+
+### Package manager
+
+You can use any of these package managers:
+
+<CardGroup cols={3}>
+  <Card title="npm" icon="box">
+    Included with Node.js
+    
+    Default and most widely used
+  </Card>
+  <Card title="yarn" icon="yarn">
+    ```bash
+    npm install -g yarn
+    ```
+    
+    Fast and reliable
+  </Card>
+  <Card title="pnpm" icon="box-open">
+    ```bash
+    npm install -g pnpm
+    ```
+    
+    Efficient disk space usage
+  </Card>
+</CardGroup>
+
+### Git
+
+Git is required to clone the repository:
+
+```bash
+git --version
+```
+
+If not installed, download from [git-scm.com](https://git-scm.com).
+
+### Code editor (recommended)
+
+We recommend using [Visual Studio Code](https://code.visualstudio.com) with these extensions:
+
+- **ES7+ React/Redux/React-Native snippets**: Code snippets
+- **Tailwind CSS IntelliSense**: Tailwind class autocomplete
+- **Prettier - Code formatter**: Code formatting
+- **ESLint**: Code linting
+
+## Installation steps
+
+<Steps>
+  <Step title="Clone the repository">
+    Clone the project to your local machine:
+
+    ```bash
+    git clone https://github.com/arshsaxena/arshsaxenadotin.git
+    cd arshsaxenadotin
+    ```
+
+    <Tip>
+    **Forking first?** If you plan to customize and maintain your own version, fork the repository on GitHub first, then clone your fork:
+
+    ```bash
+    git clone https://github.com/YOUR-USERNAME/arshsaxenadotin.git
+    cd arshsaxenadotin
+    ```
+    </Tip>
+  </Step>
+
+  <Step title="Install dependencies">
+    Install all required npm packages:
+
+    <CodeGroup>
+      ```bash npm
+      npm install
+      ```
+
+      ```bash yarn
+      yarn install
+      ```
+
+      ```bash pnpm
+      pnpm install
+      ```
+    </CodeGroup>
+
+    This will install all dependencies from `package.json:14-46`.
+
+    <Accordion title="What gets installed?" icon="box">
+      **Core Dependencies (31 packages)**:
+      
+      - **Framework**: next@15.5.9, react@19.1.0, react-dom@19.1.0
+      - **Styling**: tailwindcss@3.4.13, autoprefixer@10.4.20, postcss@8.4.47
+      - **UI Components**: @radix-ui/react-label@2.1.7, lucide-react@0.511.0, @tabler/icons-react@3.33.0
+      - **Fonts**: geist@1.4.2, @fontsource/geist-sans@5.2.5
+      - **Animation**: motion@12.12.2, typed.js@2.1.0, react-gradient-animation@1.0.7
+      - **Theming**: next-themes@0.4.6, class-variance-authority@0.7.1, clsx@2.1.1, tailwind-merge@3.3.0
+      - **SEO**: next-sitemap@4.2.3
+      - **Analytics**: @vercel/analytics@1.5.0, @vercel/speed-insights@1.2.0
+      - **Utilities**: tailwindcss-animate@1.0.7
+
+      **Dev Dependencies (6 packages)**:
+      
+      - eslint@9, eslint-config-next@15.5.9, @eslint/eslintrc@3
+      - prettier@3.5.3, prettier-plugin-tailwindcss@0.6.11
+      - @svgr/webpack@8.1.0
+    </Accordion>
+
+    <Warning>
+    If you see peer dependency warnings, you can typically ignore them. The project uses `NPM_CONFIG_LEGACY_PEER_DEPS=true` in production builds as specified in `vercel.json:3`.
+    </Warning>
+  </Step>
+
+  <Step title="Verify the installation">
+    Check that everything is installed correctly:
+
+    ```bash
+    # Check for node_modules directory
+    ls -la node_modules
+
+    # Verify Next.js installation
+    npm list next
+    ```
+
+    **Expected output:**
+
+    ```
+    arshsaxenadotin@0.1.0 /path/to/arshsaxenadotin
+    └── next@15.5.9
+    ```
+  </Step>
+
+  <Step title="Start the development server">
+    Launch the development server:
+
+    <CodeGroup>
+      ```bash npm
+      npm run dev
+      ```
+
+      ```bash yarn
+      yarn dev
+      ```
+
+      ```bash pnpm
+      pnpm dev
+      ```
+    </CodeGroup>
+
+    **What this does** (from `package.json:6`):
+    
+    ```json
+    "dev": "next dev"
+    ```
+
+    The server will start on [http://localhost:3000](http://localhost:3000).
+
+    **Expected output:**
+
+    ```bash
+    ▲ Next.js 15.5.9
+    - Local:        http://localhost:3000
+    - Environments: .env
+
+    ✓ Starting...
+    ✓ Ready in 2.5s
+    ○ Compiling / ...
+    ✓ Compiled / in 3.2s
+    ```
+  </Step>
+</Steps>
+
+## Project structure overview
+
+After installation, your project directory will look like this:
+
+```bash
+arshsaxenadotin/
+├── public/                 # Static assets (images, icons, etc.)
+│   ├── about/             # About page images
+│   ├── made-by-arsh/      # Project screenshots and assets
+│   ├── social/            # Social media icons
+│   └── download/          # Downloadable templates
+├── src/
+│   ├── app/               # Next.js 15 App Router pages
+│   │   ├── page.js        # Home page
+│   │   ├── layout.js      # Root layout
+│   │   ├── about/         # About page
+│   │   ├── connect/       # Contact page
+│   │   ├── made-by-arsh/  # Projects showcase
+│   │   └── resume/        # Resume page
+│   ├── components/        # React components
+│   │   ├── About/         # About page components
+│   │   ├── Common/        # Shared components
+│   │   ├── Connect/       # Contact form components
+│   │   ├── Home/          # Home page components
+│   │   ├── Layout/        # Layout components (Navbar, Footer)
+│   │   ├── MadeByArsh/    # Project showcase components
+│   │   └── Theme/         # Theme toggle components
+│   ├── data/              # Data files and configuration
+│   ├── hooks/             # Custom React hooks
+│   ├── lib/               # Utility functions
+│   └── styles/            # Global styles
+├── next.config.js         # Next.js configuration
+├── tailwind.config.js     # Tailwind CSS configuration
+├── next-sitemap.config.js # Sitemap generation config
+├── package.json           # Dependencies and scripts
+└── jsconfig.json          # JavaScript configuration
+```
+
+<Tip>
+For a detailed breakdown of the project structure, see the [Project Structure Guide](/architecture/project-structure).
+</Tip>
+
+## Understanding key files
+
+### package.json
+
+Defines all project dependencies and npm scripts:
+
+```json package.json
+{
+  "name": "arshsaxenadotin",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "postbuild": "next-sitemap",
+    "start": "next start",
+    "lint": "next lint",
+    "export": "next export",
+    "format": "prettier --write ."
+  }
+}
+```
+
+**Available scripts:**
+
+- `npm run dev` - Start development server
+- `npm run build` - Create production build
+- `npm run start` - Start production server
+- `npm run lint` - Run ESLint
+- `npm run format` - Format code with Prettier
+
+### next.config.js
+
+Configures Next.js behavior and features:
+
+```javascript next.config.js
+module.exports = {
+  images: {
+    unoptimized: true,  // For static export compatibility
+  },
+  webpack(config) {
+    // SVG as React components
+    config.module.rules.push({
+      test: /\.svg$/,
+      use: ['@svgr/webpack'],
+    });
+    return config;
+  },
+  async redirects() {
+    // Smart URL redirects for social links, etc.
+    return [...];
+  },
+};
+```
+
+<Note>
+The project is configured with `output: 'export'` for static site generation, making it deployable on any static hosting service.
+</Note>
+
+### tailwind.config.js
+
+Defines the Tailwind CSS design system:
+
+```javascript tailwind.config.js
+module.exports = {
+  content: [
+    './app/**/*.{js,ts,jsx,tsx,mdx}',
+    './components/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
+  darkMode: 'class',
+  theme: {
+    extend: {
+      fontFamily: {
+        sans: ['var(--font-geist)', ...defaultTheme.fontFamily.sans],
+      },
+      colors: {
+        // Custom color system with CSS variables
+      },
+    },
+  },
+  plugins: [require('tailwindcss-animate')],
+};
+```
+
+### src/app/layout.js
+
+Root layout component that wraps all pages:
+
+```javascript src/app/layout.js
+import { GeistSans } from 'geist/font/sans';
+import { GeistMono } from 'geist/font/mono';
+import { SpeedInsights } from '@vercel/speed-insights/next';
+import { Analytics } from '@vercel/analytics/next';
+
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en" className={`${GeistSans.className} ${GeistMono.variable}`}>
+      <body>
+        <AnimatedBackground />
+        <Navbar />
+        {children}
+        <Footer />
+        <SpeedInsights />
+        <Analytics />
+      </body>
+    </html>
+  );
+}
+```
+
+## Environment setup (optional)
+
+The portfolio doesn't require environment variables for basic functionality, but you can create an `.env.local` file for custom configuration:
+
+```bash .env.local
+# Analytics (optional - already integrated in code)
+NEXT_PUBLIC_VERCEL_ANALYTICS_ID=your_analytics_id
+
+# Custom configuration
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+```
+
+<Warning>
+Never commit `.env.local` or any `.env` files containing secrets to version control. They are already included in `.gitignore:28`.
+</Warning>
+
+## Dependency details
+
+### Core framework dependencies
+
+These are essential and should not be removed:
+
+<Tabs>
+  <Tab title="Next.js & React">
+    ```json
+    "next": "15.5.9",
+    "react": "19.1.0",
+    "react-dom": "19.1.0"
+    ```
+
+    The latest versions of Next.js and React provide:
+    - App Router with Server Components
+    - Improved performance and caching
+    - React 19 features including enhanced hooks
+  </Tab>
+
+  <Tab title="Styling">
+    ```json
+    "tailwindcss": "3.4.13",
+    "autoprefixer": "10.4.20",
+    "postcss": "8.4.47",
+    "tailwind-merge": "3.3.0",
+    "tailwindcss-animate": "1.0.7"
+    ```
+
+    Tailwind CSS setup with:
+    - Utility-first CSS framework
+    - PostCSS processing
+    - Animation utilities
+    - Class merging utilities
+  </Tab>
+
+  <Tab title="UI & Icons">
+    ```json
+    "@radix-ui/react-label": "2.1.7",
+    "lucide-react": "0.511.0",
+    "@tabler/icons-react": "3.33.0",
+    "class-variance-authority": "0.7.1",
+    "clsx": "2.1.1"
+    ```
+
+    UI primitives and icon libraries for:
+    - Accessible components (Radix UI)
+    - Modern icons (Lucide & Tabler)
+    - Variant management (CVA)
+  </Tab>
+
+  <Tab title="Animation">
+    ```json
+    "motion": "12.12.2",
+    "typed.js": "2.1.0",
+    "react-gradient-animation": "1.0.7"
+    ```
+
+    Animation libraries for:
+    - Smooth transitions (Motion/Framer Motion)
+    - Typing effects (typed.js)
+    - Animated backgrounds
+  </Tab>
+
+  <Tab title="Analytics & SEO">
+    ```json
+    "@vercel/analytics": "1.5.0",
+    "@vercel/speed-insights": "1.2.0",
+    "next-sitemap": "4.2.3"
+    ```
+
+    Performance and SEO tools:
+    - User analytics tracking
+    - Performance monitoring
+    - Automatic sitemap generation
+  </Tab>
+</Tabs>
+
+## Building for production
+
+Once you've verified everything works in development, you can create a production build:
+
+<Steps>
+  <Step title="Create the production build">
+    <CodeGroup>
+      ```bash npm
+      npm run build
+      ```
+
+      ```bash yarn
+      yarn build
+      ```
+
+      ```bash pnpm
+      pnpm build
+      ```
+    </CodeGroup>
+
+    This command:
+    1. Runs `next build` to create an optimized build
+    2. Automatically runs `next-sitemap` (via `postbuild` script in `package.json:8`)
+    3. Generates static HTML files in the `out/` directory
+
+    **Build output example:**
+
+    ```bash
+    Route (app)                              Size     First Load JS
+    ┌ ○ /                                    5.2 kB         92.1 kB
+    ├ ○ /about                               3.8 kB         89.7 kB
+    ├ ○ /connect                             4.1 kB         90.0 kB
+    ├ ○ /made-by-arsh                        6.3 kB         93.2 kB
+    ├ ○ /made-by-arsh/templates/[slug]       2.9 kB         88.8 kB
+    ├ ○ /resume                              4.5 kB         90.4 kB
+    └ ○ /404                                 2.1 kB         87.0 kB
+
+    ○  (Static)  prerendered as static content
+    ```
+  </Step>
+
+  <Step title="Test the production build locally">
+    <CodeGroup>
+      ```bash npm
+      npm run start
+      ```
+
+      ```bash yarn
+      yarn start
+      ```
+
+      ```bash pnpm
+      pnpm start
+      ```
+    </CodeGroup>
+
+    Visit [http://localhost:3000](http://localhost:3000) to preview the production version.
+  </Step>
+
+  <Step title="Inspect the build output">
+    The build creates these files:
+
+    ```bash
+    .next/              # Build cache and server files
+    out/                # Static export (if using static export)
+    public/sitemap.xml  # Generated sitemap
+    public/robots.txt   # Robots.txt file
+    ```
+  </Step>
+</Steps>
+
+<Tip>
+The production build is significantly faster than development mode with optimizations like minification, code splitting, and tree shaking.
+</Tip>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Installation fails with permission errors" icon="lock">
+    Try using `sudo` (not recommended) or fix npm permissions:
+
+    ```bash
+    # Fix npm permissions (recommended)
+    mkdir ~/.npm-global
+    npm config set prefix '~/.npm-global'
+    export PATH=~/.npm-global/bin:$PATH
+    ```
+
+    Add the export line to your `~/.bashrc` or `~/.zshrc` file.
+  </Accordion>
+
+  <Accordion title="Node version mismatch" icon="code-branch">
+    If you get errors about unsupported Node.js version:
+
+    ```bash
+    # Check required version in error message
+    # Install correct version with nvm
+    nvm install 18
+    nvm use 18
+    ```
+  </Accordion>
+
+  <Accordion title="npm install is very slow" icon="clock">
+    Try these solutions:
+
+    1. **Clear npm cache:**
+       ```bash
+       npm cache clean --force
+       npm install
+       ```
+
+    2. **Use a different registry:**
+       ```bash
+       npm install --registry=https://registry.npmjs.org/
+       ```
+
+    3. **Try a faster package manager:**
+       ```bash
+       npm install -g pnpm
+       pnpm install
+       ```
+  </Accordion>
+
+  <Accordion title="Peer dependency warnings" icon="triangle-exclamation">
+    Peer dependency warnings can usually be ignored. If you want to resolve them:
+
+    ```bash
+    npm install --legacy-peer-deps
+    ```
+
+    This is already configured for production builds in `vercel.json:4`.
+  </Accordion>
+
+  <Accordion title="Module not found after installation" icon="magnifying-glass">
+    Delete and reinstall:
+
+    ```bash
+    rm -rf node_modules package-lock.json
+    npm install
+    ```
+
+    If using yarn:
+
+    ```bash
+    rm -rf node_modules yarn.lock
+    yarn install
+    ```
+  </Accordion>
+
+  <Accordion title="Build fails with memory errors" icon="memory">
+    Increase Node.js memory limit:
+
+    ```bash
+    NODE_OPTIONS="--max-old-space-size=4096" npm run build
+    ```
+
+    Or add to `package.json` scripts:
+
+    ```json
+    "build": "NODE_OPTIONS='--max-old-space-size=4096' next build"
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Next steps
+
+Now that you have the portfolio installed and running:
+
+<CardGroup cols={2}>
+  <Card
+    title="Project Structure"
+    icon="folder-tree"
+    href="/structure/overview"
+  >
+    Explore the codebase organization and understand how components are structured
+  </Card>
+  <Card
+    title="Customization"
+    icon="palette"
+    href="/guides/customizing-theme"
+  >
+    Learn how to customize the portfolio with your own content and branding
+  </Card>
+  <Card
+    title="Components"
+    icon="puzzle-piece"
+    href="/components/layout"
+  >
+    Understand the component architecture and reusable UI elements
+  </Card>
+  <Card
+    title="Deployment"
+    icon="rocket"
+    href="/guides/deployment"
+  >
+    Deploy your portfolio to Vercel, Netlify, or other hosting platforms
+  </Card>
+</CardGroup>
+
+## Additional resources
+
+- **Next.js Documentation**: [nextjs.org/docs](https://nextjs.org/docs)
+- **React Documentation**: [react.dev](https://react.dev)
+- **Tailwind CSS Documentation**: [tailwindcss.com/docs](https://tailwindcss.com/docs)
+- **Vercel Deployment Guide**: [vercel.com/docs](https://vercel.com/docs)
+
+<Note>
+If you need quick start instructions without all the details, see the [Quickstart Guide](/quickstart).
+</Note>

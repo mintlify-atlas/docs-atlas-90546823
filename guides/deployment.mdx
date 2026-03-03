@@ -1,0 +1,526 @@
+---
+title: Deployment
+description: Deploy your portfolio to production with Vercel, including build configuration and environment setup
+---
+
+This guide covers deploying your portfolio to production using Vercel, the recommended hosting platform for Next.js applications.
+
+## Why Vercel?
+
+The portfolio is optimized for Vercel deployment:
+- Automatic builds on every push
+- Built-in Next.js optimization
+- Zero-configuration deployment
+- Custom domain support
+- Automatic HTTPS
+- Edge network for fast global access
+- Support for redirects via `vercel.json`
+
+## Prerequisites
+
+Before deploying, ensure you have:
+
+<Steps>
+  <Step title="A GitHub account">
+    Your code should be in a GitHub repository (GitLab and Bitbucket also supported).
+  </Step>
+
+  <Step title="A Vercel account">
+    Sign up at [vercel.com](https://vercel.com) (free tier available).
+  </Step>
+
+  <Step title="Updated content">
+    Make sure you've personalized all content as described in the [Modifying Content](/guides/modifying-content) guide.
+  </Step>
+</Steps>
+
+## Deploying to Vercel
+
+<Steps>
+  <Step title="Push your code to GitHub">
+    Make sure your code is committed and pushed to a GitHub repository:
+
+    ```bash
+    git add .
+    git commit -m "Prepare for deployment"
+    git push origin main
+    ```
+  </Step>
+
+  <Step title="Connect to Vercel">
+    1. Go to [vercel.com/new](https://vercel.com/new)
+    2. Click "Import Project"
+    3. Select "Import Git Repository"
+    4. Choose your portfolio repository
+    5. Click "Import"
+  </Step>
+
+  <Step title="Configure build settings">
+    Vercel automatically detects Next.js. Verify these settings:
+
+    | Setting | Value |
+    |---------|-------|
+    | Framework Preset | Next.js |
+    | Build Command | `npm run build` |
+    | Output Directory | `.next` (auto-detected) |
+    | Install Command | `npm install` |
+  </Step>
+
+  <Step title="Add environment variables (if needed)">
+    If your portfolio uses environment variables:
+    
+    1. Click "Environment Variables"
+    2. Add each variable:
+       - Name: `NEXT_PUBLIC_API_KEY`
+       - Value: `your_value_here`
+    3. Select which environments (Production, Preview, Development)
+  </Step>
+
+  <Step title="Deploy">
+    Click "Deploy" and wait for the build to complete (usually 1-3 minutes).
+  </Step>
+
+  <Step title="View your site">
+    Once deployed, Vercel provides a URL like `your-portfolio.vercel.app`.
+  </Step>
+</Steps>
+
+## Build Configuration
+
+### Understanding vercel.json
+
+The portfolio includes a `vercel.json` configuration file:
+
+```json vercel.json
+{
+  "build": {
+    "env": {
+      "NPM_CONFIG_LEGACY_PEER_DEPS": "true"
+    }
+  },
+  "redirects": [
+    {
+      "source": "/linkedin",
+      "destination": "https://www.linkedin.com/in/yourprofile",
+      "permanent": true
+    }
+    // ... more redirects
+  ]
+}
+```
+
+<AccordionGroup>
+  <Accordion title="Build Environment Variables">
+    ```json
+    "build": {
+      "env": {
+        "NPM_CONFIG_LEGACY_PEER_DEPS": "true"
+      }
+    }
+    ```
+    
+    This setting is required for the portfolio to handle peer dependency conflicts during installation.
+  </Accordion>
+
+  <Accordion title="Redirects">
+    ```json
+    "redirects": [
+      {
+        "source": "/github",
+        "destination": "https://github.com/yourusername",
+        "permanent": true
+      }
+    ]
+    ```
+    
+    These create short URLs that redirect to your social profiles. Update the destinations with your actual URLs.
+  </Accordion>
+</AccordionGroup>
+
+<Warning>
+  Make sure to update all redirect destinations in `vercel.json` to point to your actual social media profiles.
+</Warning>
+
+## Build Process
+
+### Understanding the Build
+
+The build process runs these commands:
+
+```json package.json
+{
+  "scripts": {
+    "build": "next build",
+    "postbuild": "next-sitemap"
+  }
+}
+```
+
+<Steps>
+  <Step title="next build">
+    Compiles your Next.js application:
+    - Optimizes images
+    - Bundles JavaScript/CSS
+    - Generates static pages
+    - Creates production build
+  </Step>
+
+  <Step title="next-sitemap">
+    Automatically runs after build:
+    - Generates `sitemap.xml`
+    - Creates `robots.txt`
+    - Indexes all public pages
+  </Step>
+</Steps>
+
+### Testing the Build Locally
+
+Before deploying, test the production build locally:
+
+```bash
+# Create a production build
+npm run build
+
+# Start the production server
+npm start
+```
+
+Visit `http://localhost:3000` to preview the production version.
+
+<Tip>
+  Always test your production build locally before deploying to catch build errors early.
+</Tip>
+
+## Sitemap Generation
+
+The portfolio automatically generates a sitemap on every build.
+
+### Sitemap Configuration
+
+```js next-sitemap.config.js
+module.exports = {
+  siteUrl: 'https://www.yoursite.com',
+  generateRobotsTxt: true,
+  generateIndexSitemap: true,
+  exclude: ['/resume'],
+};
+```
+
+<ParamField path="siteUrl" type="string" required>
+  Your production domain. Update this to your actual URL.
+</ParamField>
+
+<ParamField path="generateRobotsTxt" type="boolean" default={true}>
+  Creates a `robots.txt` file for search engine crawlers.
+</ParamField>
+
+<ParamField path="generateIndexSitemap" type="boolean" default={true}>
+  Creates a sitemap index for better organization.
+</ParamField>
+
+<ParamField path="exclude" type="array" default={[]}>
+  Pages to exclude from the sitemap (e.g., private pages).
+</ParamField>
+
+### Verifying Your Sitemap
+
+After deployment:
+
+1. Visit `yoursite.com/sitemap.xml`
+2. Verify all pages are listed
+3. Submit to Google Search Console
+4. Submit to Bing Webmaster Tools
+
+## Custom Domain Setup
+
+<Steps>
+  <Step title="Purchase a domain">
+    Buy a domain from providers like:
+    - Namecheap
+    - Google Domains
+    - GoDaddy
+    - Vercel Domains
+  </Step>
+
+  <Step title="Add domain to Vercel">
+    1. Go to your project in Vercel
+    2. Click "Settings" > "Domains"
+    3. Enter your domain name
+    4. Click "Add"
+  </Step>
+
+  <Step title="Configure DNS">
+    Vercel provides DNS records to add. Two options:
+
+    **Option A: Nameservers (Recommended)**
+    ```
+    ns1.vercel-dns.com
+    ns2.vercel-dns.com
+    ```
+
+    **Option B: A Record**
+    ```
+    A Record: 76.76.21.21
+    ```
+  </Step>
+
+  <Step title="Wait for DNS propagation">
+    DNS changes can take 24-48 hours to propagate globally. Use [DNS Checker](https://dnschecker.org) to monitor.
+  </Step>
+
+  <Step title="Enable HTTPS">
+    Vercel automatically provisions SSL certificates via Let's Encrypt. This happens automatically within minutes.
+  </Step>
+</Steps>
+
+<Info>
+  Vercel automatically redirects www to non-www (or vice versa) and enforces HTTPS.
+</Info>
+
+## Environment Variables
+
+If your portfolio needs API keys or secrets:
+
+### Adding Variables in Vercel
+
+<Steps>
+  <Step title="Navigate to project settings">
+    In your Vercel dashboard, go to Project Settings > Environment Variables.
+  </Step>
+
+  <Step title="Add variables">
+    For each variable:
+    - **Name**: `NEXT_PUBLIC_API_KEY`
+    - **Value**: Your actual value
+    - **Environment**: Select Production, Preview, and/or Development
+  </Step>
+
+  <Step title="Redeploy">
+    After adding variables, trigger a new deployment for changes to take effect.
+  </Step>
+</Steps>
+
+### Variable Naming Conventions
+
+```bash .env.local
+# Public (accessible in browser)
+NEXT_PUBLIC_API_KEY=your_key_here
+NEXT_PUBLIC_ANALYTICS_ID=your_id_here
+
+# Private (server-side only)
+DATABASE_URL=your_database_url
+API_SECRET=your_secret_key
+```
+
+<Warning>
+  Only variables prefixed with `NEXT_PUBLIC_` are exposed to the browser. Never put secrets in `NEXT_PUBLIC_` variables.
+</Warning>
+
+## Continuous Deployment
+
+Vercel automatically deploys when you push to GitHub:
+
+### Main Branch (Production)
+```bash
+git add .
+git commit -m "Update portfolio"
+git push origin main
+```
+
+This triggers a production deployment.
+
+### Preview Deployments
+
+Every pull request gets a preview deployment:
+
+1. Create a new branch: `git checkout -b feature/new-section`
+2. Make changes and push: `git push origin feature/new-section`
+3. Create a pull request on GitHub
+4. Vercel automatically deploys a preview
+
+<Tip>
+  Preview deployments are perfect for testing changes before merging to production.
+</Tip>
+
+## Monitoring and Analytics
+
+The portfolio includes built-in analytics:
+
+### Vercel Analytics
+
+```jsx src/app/layout.js
+import { Analytics } from '@vercel/analytics/next';
+
+// In your component
+<Analytics />
+```
+
+View analytics in your Vercel dashboard under the "Analytics" tab.
+
+### Vercel Speed Insights
+
+```jsx src/app/layout.js
+import { SpeedInsights } from '@vercel/speed-insights/next';
+
+// In your component
+<SpeedInsights />
+```
+
+Monitor Core Web Vitals and performance metrics.
+
+### Microsoft Clarity (Built-in)
+
+The portfolio includes Microsoft Clarity for session recording and heatmaps. Update the Clarity ID in `src/app/layout.js`:
+
+```js
+script: {
+  innerHTML: `(function(c,l,a,r,i,t,y){
+    // ...
+  })(window, document, "clarity", "script", "YOUR_CLARITY_ID");
+```
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Build fails with peer dependency errors">
+    Ensure `vercel.json` includes:
+    ```json
+    {
+      "build": {
+        "env": {
+          "NPM_CONFIG_LEGACY_PEER_DEPS": "true"
+        }
+      }
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="Images not loading">
+    - Verify images are in the `/public` directory
+    - Check file paths are correct (case-sensitive)
+    - Ensure image formats are supported (WebP, PNG, JPG)
+  </Accordion>
+
+  <Accordion title="Redirects not working">
+    - Verify `vercel.json` syntax is correct
+    - Check redirect paths don't have typos
+    - Redeploy after making changes
+  </Accordion>
+
+  <Accordion title="Environment variables not working">
+    - Verify variable names are correct
+    - Check if they need `NEXT_PUBLIC_` prefix
+    - Redeploy after adding variables
+  </Accordion>
+
+  <Accordion title="404 errors on deployment">
+    - Check file paths and imports
+    - Verify page files are in the correct directories
+    - Review build logs for errors
+  </Accordion>
+</AccordionGroup>
+
+## Post-Deployment Checklist
+
+<Steps>
+  <Step title="Test all pages">
+    Navigate through your entire site and verify:
+    - All pages load correctly
+    - Images display properly
+    - Links work as expected
+    - Social links redirect correctly
+  </Step>
+
+  <Step title="Test on multiple devices">
+    Check responsiveness on:
+    - Desktop
+    - Tablet
+    - Mobile
+    - Different browsers (Chrome, Firefox, Safari)
+  </Step>
+
+  <Step title="Verify SEO">
+    - Check meta tags in page source
+    - Test social media previews
+    - Submit sitemap to search engines
+  </Step>
+
+  <Step title="Set up monitoring">
+    - Enable Vercel Analytics
+    - Configure Speed Insights
+    - Set up uptime monitoring (e.g., UptimeRobot)
+  </Step>
+
+  <Step title="Submit to search engines">
+    - [Google Search Console](https://search.google.com/search-console)
+    - [Bing Webmaster Tools](https://www.bing.com/webmasters)
+  </Step>
+</Steps>
+
+## Performance Optimization
+
+### Image Optimization
+
+Next.js automatically optimizes images. Ensure you're using the Image component:
+
+```jsx
+import Image from 'next/image';
+
+<Image
+  src="/your-image.webp"
+  alt="Description"
+  width={800}
+  height={600}
+/>
+```
+
+### Caching
+
+Vercel automatically caches static assets. No configuration needed.
+
+### CDN
+
+Vercel uses a global Edge Network to serve your site from the closest location to your users.
+
+## Alternative Deployment Options
+
+While Vercel is recommended, you can also deploy to:
+
+<CardGroup cols={2}>
+  <Card title="Netlify" icon="cloud">
+    1. Connect your repo
+    2. Build command: `npm run build`
+    3. Publish directory: `.next`
+  </Card>
+  
+  <Card title="Cloudflare Pages" icon="cloud">
+    1. Connect your repo
+    2. Build command: `npm run build`
+    3. Build output: `.next`
+  </Card>
+  
+  <Card title="Self-Hosted" icon="server">
+    1. Run `npm run build`
+    2. Run `npm start`
+    3. Use PM2 or similar for process management
+  </Card>
+  
+  <Card title="Docker" icon="docker">
+    Create a Dockerfile and deploy to any container platform
+  </Card>
+</CardGroup>
+
+<Warning>
+  Some features like redirects in `vercel.json` are Vercel-specific. You'll need to configure them differently on other platforms.
+</Warning>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Customize Theme" icon="palette" href="/guides/customizing-theme">
+    Personalize colors and appearance
+  </Card>
+  <Card title="Add Projects" icon="folder-plus" href="/guides/adding-projects">
+    Showcase your work
+  </Card>
+</CardGroup>

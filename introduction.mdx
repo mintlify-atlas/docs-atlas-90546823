@@ -1,0 +1,232 @@
+---
+title: Introduction
+description: Welcome to the Arsh Saxena Portfolio documentation - a modern, performant personal portfolio built with Next.js 15 and React 19
+---
+
+# Welcome to Arsh Saxena Portfolio
+
+A modern, responsive personal portfolio website showcasing web development projects, skills, and professional experience. Built with cutting-edge technologies for optimal performance and user experience.
+
+<CardGroup cols={2}>
+  <Card
+    title="Quickstart"
+    icon="rocket"
+    href="/quickstart"
+  >
+    Get up and running in under 5 minutes
+  </Card>
+  <Card
+    title="Installation"
+    icon="download"
+    href="/installation"
+  >
+    Detailed setup and installation guide
+  </Card>
+  <Card
+    title="Project Structure"
+    icon="folder-tree"
+    href="/structure/overview"
+  >
+    Explore the codebase organization
+  </Card>
+  <Card
+    title="Customization"
+    icon="palette"
+    href="/guides/customizing-theme"
+  >
+    Customize your portfolio settings
+  </Card>
+</CardGroup>
+
+## What is this project?
+
+This is a personal portfolio website for Arsh Saxena, a web developer and student at VIT Chennai. The portfolio showcases:
+
+- **Web Projects**: Full-featured applications like NPTEL Companion, VIT Chennai Faculty Information, and various utility tools
+- **Python Projects**: Interactive games and applications including Snake, Ping Pong, Space Invaders, and more
+- **Web Templates**: Downloadable UI components and templates for developers
+- **Professional Experience**: Timeline of education, work experience, and achievements
+- **Skills & Technologies**: Comprehensive overview of technical capabilities
+
+## Key features
+
+<CardGroup cols={2}>
+  <Card title="Next.js 15 & React 19" icon="react">
+    Built with the latest versions for optimal performance and modern features including the App Router and Server Components
+  </Card>
+  <Card title="Tailwind CSS" icon="paintbrush">
+    Utility-first CSS framework with custom design system, dark mode support, and responsive layouts
+  </Card>
+  <Card title="Static Site Export" icon="file-export">
+    Configured for static HTML export with `output: 'export'` for fast hosting on any platform
+  </Card>
+  <Card title="Performance Optimized" icon="gauge-high">
+    Integrated with Vercel Analytics and Speed Insights for monitoring and optimization
+  </Card>
+  <Card title="SEO Ready" icon="magnifying-glass">
+    Complete metadata, Open Graph tags, Twitter cards, structured data, and automated sitemap generation
+  </Card>
+  <Card title="Animations" icon="sparkles">
+    Smooth animations with Motion (Framer Motion v12), typed.js effects, and custom gradient backgrounds
+  </Card>
+</CardGroup>
+
+## Technology stack
+
+### Core framework
+
+- **Next.js 15.5.9**: React framework with App Router
+- **React 19.1.0**: Latest React with enhanced capabilities
+- **React DOM 19.1.0**: React rendering for web
+
+### Styling & UI
+
+- **Tailwind CSS 3.4**: Utility-first CSS framework
+- **Geist Font**: Modern sans-serif font family by Vercel
+- **Radix UI**: Accessible component primitives
+- **Lucide React & Tabler Icons**: Icon libraries
+- **class-variance-authority**: Component variant management
+
+### Animation & interactivity
+
+- **Motion 12.12**: Framer Motion for animations
+- **typed.js 2.1**: Typing animation effects
+- **next-themes 0.4**: Dark mode implementation
+- **react-gradient-animation**: Animated gradient backgrounds
+
+### Development & tooling
+
+```json package.json
+{
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "postbuild": "next-sitemap",
+    "start": "next start",
+    "lint": "next lint",
+    "export": "next export",
+    "format": "prettier --write ."
+  }
+}
+```
+
+- **ESLint**: Code linting with Next.js config
+- **Prettier**: Code formatting with Tailwind plugin
+- **next-sitemap 4.2**: Automated sitemap generation
+- **@svgr/webpack**: SVG component support
+
+### Analytics & monitoring
+
+- **@vercel/analytics**: User analytics tracking
+- **@vercel/speed-insights**: Performance monitoring
+- **Microsoft Clarity**: User behavior analytics
+
+## Project highlights
+
+### Smart routing system
+
+The portfolio includes an extensive redirect system in `next.config.js:41` for creating memorable short URLs:
+
+```javascript next.config.js
+async redirects() {
+  return [
+    {
+      source: '/linkedin',
+      destination: 'https://www.linkedin.com/in/arshsaxena',
+      permanent: true,
+    },
+    {
+      source: '/resume',
+      destination: urls.docs.resume,
+      permanent: true,
+    },
+    // ... and many more
+  ];
+}
+```
+
+### Featured projects
+
+The portfolio showcases several production-ready projects:
+
+<AccordionGroup>
+  <Accordion title="NPTEL Companion" icon="book">
+    Free, exam-ready NPTEL practice platform. Prepare with weekly and full-length quizzes from real NPTEL courses.
+    
+    [Visit Project](https://nptelcompanion.arshsaxena.in)
+  </Accordion>
+  
+  <Accordion title="VIT Chennai Faculty Information" icon="users">
+    Quickly search and filter VIT Chennai faculties with smart filters and fast search capabilities.
+    
+    [Visit Project](https://vitcfacultyinfo.arshsaxena.in)
+  </Accordion>
+  
+  <Accordion title="aEducational" icon="graduation-cap">
+    Free, quality educational content including letters, essays, notices, speeches, debates, and paragraphs.
+    
+    [Visit Project](https://education.arshsaxena.in)
+  </Accordion>
+  
+  <Accordion title="Utility Tools" icon="wrench">
+    Collection of useful tools:
+    - **aConverter**: Multi-unit converter for length, mass, temperature, and speed
+    - **QR Code Generator**: Convert text, URLs, and more into QR codes
+    - **Weather**: Live weather data worldwide with detailed metrics
+    - **Colors**: Random color generator with HEX, RGB, and RGBA values
+  </Accordion>
+</AccordionGroup>
+
+### Custom design system
+
+The project implements a comprehensive design system with CSS variables and Tailwind configuration:
+
+```javascript tailwind.config.js
+theme: {
+  extend: {
+    fontFamily: {
+      sans: ['var(--font-geist)', ...defaultTheme.fontFamily.sans],
+      mono: ['var(--font-geist-mono)'],
+    },
+    colors: {
+      background: 'hsl(var(--background))',
+      foreground: 'hsl(var(--foreground))',
+      // Custom color system with HSL variables
+    },
+  },
+}
+```
+
+## Use cases
+
+This portfolio template is ideal for:
+
+- **Developers**: Showcase your projects and technical skills professionally
+- **Students**: Build an online presence with your academic and personal projects
+- **Job Seekers**: Create a compelling portfolio to share with potential employers
+- **Learning**: Study a production-ready Next.js application with modern best practices
+
+<Note>
+This portfolio is configured for static export, making it easy to deploy on GitHub Pages, Vercel, Netlify, or any static hosting service.
+</Note>
+
+## Getting started
+
+Ready to dive in? Follow our [Quickstart Guide](/quickstart) to get the portfolio running locally in minutes, or read the detailed [Installation Guide](/installation) for comprehensive setup instructions.
+
+<CardGroup cols={2}>
+  <Card
+    title="Quickstart Guide"
+    icon="bolt"
+    href="/quickstart"
+  >
+    Clone, install, and run in 3 simple steps
+  </Card>
+  <Card
+    title="Installation Guide"
+    icon="book-open"
+    href="/installation"
+  >
+    Complete setup with prerequisites and configuration
+  </Card>
+</CardGroup>

@@ -1,0 +1,565 @@
+---
+title: Made by Arsh Components
+description: Project showcase components including web projects, Python games, web templates, and mini-projects
+---
+
+The Made by Arsh page components display Arsh's portfolio of web applications, Python games, and downloadable templates in engaging, interactive layouts.
+
+## WebProjectsSection
+
+Bento grid layout showcasing major web applications with detailed descriptions.
+
+**Location:** `src/components/MadeByArsh/WebProjectsSection.jsx`
+
+### Features
+
+- 2-column responsive bento grid
+- Project screenshots and icons
+- Two-part descriptions (tagline + details)
+- External links to live projects
+- Data-driven from `webProjectsBase.js`
+
+### Components
+
+#### BentoGrid
+
+Container component for the grid layout.
+
+```jsx BentoGrid
+export const BentoGrid = ({ children }) => {
+  return (
+    <div className="grid md:grid-cols-2">{children}</div>
+  );
+};
+```
+
+#### BentoGridItem
+
+Individual project card with icon, title, descriptions, and screenshot.
+
+<ParamField path="icon" type="string" required>
+  Path to project icon (80x80px)
+</ParamField>
+
+<ParamField path="label" type="string" required>
+  Project name/title
+</ParamField>
+
+<ParamField path="desc1" type="string" required>
+  Short tagline description
+</ParamField>
+
+<ParamField path="desc2" type="string" required>
+  Detailed feature description
+</ParamField>
+
+<ParamField path="href" type="string" required>
+  External URL to live project
+</ParamField>
+
+<ParamField path="img" type="string" required>
+  Path to project screenshot
+</ParamField>
+
+<ParamField path="css" type="string">
+  Custom CSS classes for borders and spacing
+</ParamField>
+
+### Implementation
+
+<CodeGroup>
+
+```jsx WebProjectsSection.jsx
+'use client';
+
+import React from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { ArrowUpRight } from 'lucide-react';
+import { webProjectsBase } from '@/data/webProjectsBase';
+
+export const BentoGridItem = ({ icon, label, desc1, desc2, href, img, css }) => {
+  return (
+    <div className={`row-span-1 flex h-full flex-col space-y-5 p-5 text-[var(--foreground)] ${css}`}>
+      {/* Screenshot */}
+      <div className="w-full md:w-full">
+        <Image
+          src={img}
+          alt={label}
+          width={0}
+          height={0}
+          className="h-full w-full rounded-[15px] border-[1px] border-[var(--border-default)]"
+        />
+      </div>
+      
+      {/* Content */}
+      <div className="flex h-full w-full flex-col space-y-5">
+        <div className="text-2xl font-bold md:text-3xl">
+          <div className="flex items-start gap-2">
+            <Image
+              src={icon}
+              width={0}
+              height={0}
+              alt={label}
+              className="h-[30px] w-[30px] rounded-[6.5px] border-[0.5px] border-[var(--border-default)] bg-[#f5f5f7] md:h-[35px] md:w-[35px] md:rounded-[7.5px]"
+            />
+            {label}
+          </div>
+        </div>
+        <div className="md:text-md space-y-5 text-sm">
+          <div>{desc1}</div>
+          <div>{desc2}</div>
+        </div>
+      </div>
+      
+      {/* CTA Button */}
+      <div className="w-fit">
+        <Link
+          href={href}
+          target="_blank"
+          className="flex items-center rounded-full border-[1px] border-[var(--accent)] bg-[var(--main)] px-3 text-center text-[#f5f5f7] hover:bg-[var(--accent)]"
+        >
+          <span className="text-sm md:text-[15px]">Check Out</span>
+          <ArrowUpRight className="ml-1 w-[15px]" />
+        </Link>
+      </div>
+    </div>
+  );
+};
+```
+
+</CodeGroup>
+
+### Featured Projects
+
+<Tabs>
+  <Tab title="NPTEL Companion">
+    **Free, exam-ready NPTEL practice**
+    
+    Prepare with weekly and full-length quizzes from real NPTEL courses. Designed for efficient revision and last-minute prep.
+    
+    [Visit Project →](https://nptelcompanion.arshsaxena.in/)
+  </Tab>
+  
+  <Tab title="aEducational">
+    **Free, quality educational content**
+    
+    Get letters, essays, notices, speeches, debates, and paragraphs - all written by Arsh. Perfect for students and learners.
+    
+    [Visit Project →](https://education.arshsaxena.in/)
+  </Tab>
+  
+  <Tab title="VIT Chennai Faculty Info">
+    **Quickly search and filter VIT Chennai faculties**
+    
+    Find faculty details instantly with smart filters and fast search.
+    
+    [Visit Project →](https://vitcfacultyinfo.arshsaxena.in/)
+  </Tab>
+  
+  <Tab title="aConverter">
+    **Convert in multiple units**
+    
+    Easily switch between units of length, mass, temperature, and speed. More categories coming soon!
+    
+    [Visit Project →](https://converter.arshsaxena.in/)
+  </Tab>
+</Tabs>
+
+### Complete Project List
+
+1. **NPTEL Companion** - NPTEL quiz practice platform
+2. **aEducational** - Educational content library
+3. **VIT Chennai Faculty Info** - Faculty search tool
+4. **aConverter** - Unit conversion utility
+5. **Solar System** - Interactive solar system visualization
+6. **Colors** - Random color generator
+7. **QR Code Generator** - QR code creation tool
+8. **Weather** - Live weather data worldwide
+
+## PythonProjectsSection
+
+Horizontal scrolling carousel for Python games and utilities.
+
+**Location:** `src/components/MadeByArsh/PythonProjectsSection.jsx`
+
+### Features
+
+- Horizontal scroll with smooth animations
+- Scroll navigation buttons
+- Framer Motion stagger animations
+- Card-based design with background images
+- Category badges (Game/Utility)
+- GitHub repository links
+
+### Implementation
+
+<CodeGroup>
+
+```jsx PythonProjectsSection.jsx
+'use client';
+
+import React, { useEffect, useRef, useState } from 'react';
+import { motion } from 'motion/react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { ChevronLeft, ChevronRight, ArrowUpRight } from 'lucide-react';
+
+export const PythonProjects = ({ initialScroll = 0 }) => {
+  const cardData = [
+    {
+      title: 'Sudoku with Solver',
+      category: 'Game',
+      src: '/made-by-arsh/python-projects/sudoku.webp',
+      desc: 'Three difficulty levels. Auto-solver.',
+      href: 'https://github.com/arshsaxena/PythonGamesAndProjects/tree/main/Sudoku%20with%20Solver',
+    },
+    // ... more projects
+  ];
+  
+  const carouselRef = useRef(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+
+  const scrollLeft = () => {
+    if (carouselRef.current) {
+      carouselRef.current.scrollBy({ left: -300, behavior: 'smooth' });
+    }
+  };
+
+  const scrollRight = () => {
+    if (carouselRef.current) {
+      carouselRef.current.scrollBy({ left: 300, behavior: 'smooth' });
+    }
+  };
+
+  return (
+    <div className="relative w-full py-5">
+      <div className="border-b-[1px] border-[var(--border-default)] px-5 pb-5 text-3xl font-black">
+        Python Projects
+      </div>
+      
+      {/* Instructions */}
+      <div className="p-5 pb-7 text-[var(--foreground)]">
+        <div className="text-xs italic md:text-sm">
+          To run any of the Python projects, just download them, open
+          your Terminal or Command Prompt in the project folder, type{' '}
+          <span className="whitespace-nowrap rounded-full bg-[var(--accent)] px-[5px] py-[0px] font-mono not-italic text-[#0a0a0a] md:px-[10px]">
+            python3 [file name].py
+          </span>
+          , and hit ENTER.
+        </div>
+      </div>
+      
+      {/* Scrollable cards */}
+      <div
+        className="flex w-full overflow-x-scroll overscroll-x-auto scroll-smooth pb-5 [scrollbar-width:none]"
+        ref={carouselRef}
+        onScroll={checkScrollability}
+      >
+        <div className="flex flex-row justify-start gap-4 pl-5">
+          {items.map((item, index) => (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{
+                opacity: 1,
+                y: 0,
+                transition: {
+                  duration: 0.5,
+                  delay: 0.2 * index,
+                  ease: 'easeOut',
+                  once: true,
+                },
+              }}
+              key={'card' + index}
+            >
+              {item}
+            </motion.div>
+          ))}
+        </div>
+      </div>
+      
+      {/* Navigation buttons */}
+      <div className="mr-5 flex justify-end gap-2">
+        <button onClick={scrollLeft} disabled={!canScrollLeft}>
+          <ChevronLeft className="h-7 w-7 text-[#f5f5f7]" />
+        </button>
+        <button onClick={scrollRight} disabled={!canScrollRight}>
+          <ChevronRight className="h-7 w-7 text-[#f5f5f7]" />
+        </button>
+      </div>
+    </div>
+  );
+};
+```
+
+</CodeGroup>
+
+### Card Component
+
+Each Python project card features:
+
+```jsx Card Component
+export const Card = ({ card }) => {
+  return (
+    <div className="relative z-10 flex h-80 w-60 flex-col items-start justify-start overflow-hidden rounded-[20px] border-[1px] border-[var(--border-default)] bg-[#0a0a0a] md:h-[20rem] md:w-96">
+      {/* Gradient overlay */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-30 h-full bg-gradient-to-b from-black/50 via-transparent to-transparent" />
+      
+      {/* Content */}
+      <div className="relative z-40 flex h-full flex-col justify-between p-3 md:p-5">
+        <div className="space-y-2">
+          <div className="w-fit rounded-full bg-[var(--main)] px-2 py-[2px] text-left text-xs text-[#f5f5f7]">
+            {card.category}
+          </div>
+          <div className="max-w-xs text-left font-sans text-xl font-bold text-white md:text-2xl">
+            {card.title}
+          </div>
+          <div className="text-left text-[12px] text-[#f5f5f7] md:text-[14px]">
+            {card.desc}
+          </div>
+        </div>
+        <Link
+          href={card.href}
+          target="_blank"
+          className="flex w-fit items-center rounded-full border-[1px] border-[var(--accent)] bg-[var(--main)] px-2 text-center text-[#f5f5f7] hover:bg-[var(--accent)]"
+        >
+          <span>Get Now</span>
+          <ArrowUpRight className="ml-1 w-[16px]" />
+        </Link>
+      </div>
+      
+      {/* Background image */}
+      <BlurImage
+        src={card.src}
+        alt={card.title}
+        fill
+        className="absolute inset-0 z-10 object-cover opacity-40 blur-[1.5px]"
+      />
+    </div>
+  );
+};
+```
+
+### Python Projects List
+
+<CardGroup cols={2}>
+  <Card title="Sudoku with Solver" icon="grid">
+    Three difficulty levels with auto-solver feature
+  </Card>
+  
+  <Card title="Truck VS Car" icon="car">
+    Three difficulty levels, health bar, day/night cycle, background music
+  </Card>
+  
+  <Card title="Typing Speed Calculator" icon="keyboard">
+    Live typing indicator with WPM and accuracy metrics
+  </Card>
+  
+  <Card title="Ping-Pong" icon="table-tennis">
+    Three speed levels with dynamic difficulty increase
+  </Card>
+  
+  <Card title="Space Invaders" icon="rocket">
+    Classic interactive arcade game
+  </Card>
+  
+  <Card title="Snake" icon="snake">
+    Classic snake game implementation
+  </Card>
+</CardGroup>
+
+## WebTemplatesSection
+
+Downloadable website templates with screenshot slideshows.
+
+**Location:** `src/components/MadeByArsh/WebTemplatesSection.jsx`
+
+### Features
+
+- Screenshot slideshow with captions
+- Navigation arrows for multiple screenshots
+- Feature lists
+- Download links (future implementation)
+- Flexible grid layouts
+
+### Slideshow Component
+
+```jsx Slideshow
+const Slideshow = ({ screenshots }) => {
+  const [current, setCurrent] = useState(0);
+
+  const nextSlide = () => setCurrent((current + 1) % screenshots.length);
+  const prevSlide = () => setCurrent((current - 1 + screenshots.length) % screenshots.length);
+
+  const { src, caption } = screenshots[current];
+
+  return (
+    <div className="relative w-full">
+      <Image
+        src={src}
+        alt={caption}
+        width={800}
+        height={600}
+        className="h-auto w-full rounded-[15px] border-[1px] border-[var(--border-default)] object-cover"
+      />
+      <div className="absolute bottom-2 left-2 rounded-full bg-black bg-opacity-50 px-2 py-1 text-xs text-white">
+        {caption}
+      </div>
+      {screenshots.length > 1 && (
+        <>
+          <button onClick={prevSlide} className="absolute left-2 top-1/2 -translate-y-1/2">
+            <ChevronLeft size={18} className="text-white" />
+          </button>
+          <button onClick={nextSlide} className="absolute right-2 top-1/2 -translate-y-1/2">
+            <ChevronRight size={18} className="text-white" />
+          </button>
+        </>
+      )}
+    </div>
+  );
+};
+```
+
+### Template Data Structure
+
+<CodeGroup>
+
+```javascript webTemplatesBase.js
+export const rawTemplateData = [
+  {
+    slug: 'simple-old-school',
+    name: 'Simple Old School',
+    screenshots: [
+      { src: '/made-by-arsh/web-templates/simple-old-school/template-screenshot-1.webp', caption: 'Home' },
+      { src: '/made-by-arsh/web-templates/simple-old-school/template-screenshot-2.webp', caption: 'Gallery' },
+      { src: '/made-by-arsh/web-templates/simple-old-school/template-screenshot-3.webp', caption: 'GitHub' },
+      { src: '/made-by-arsh/web-templates/simple-old-school/template-screenshot-4.webp', caption: 'Error 404' },
+    ],
+    desc: 'A classic, easy-to-read HTML/CSS website with retro styling, basic navigation, and a custom 404 page.',
+    features: [
+      'Built with HTML and CSS',
+      '2-items navigation bar',
+      'Good readability',
+      'Back button on pages',
+      'Social media links',
+      'Custom Error 404 page',
+      'Custom scrollbar',
+    ],
+    fileName: 'Simple-Old-School-by-Arsh.zip',
+    size: '2.12MB',
+    downloadLink: '/download/Simple-Old-School-by-Arsh.zip',
+  },
+];
+
+export const templateData = rawTemplateData.map((item) => ({
+  ...item,
+  href: `/made-by-arsh/templates/${item.slug}`,
+}));
+```
+
+</CodeGroup>
+
+### Available Templates
+
+<AccordionGroup>
+  <Accordion title="Simple Old School">
+    **Features:**
+    - Built with HTML and CSS
+    - 2-items navigation bar
+    - Good readability
+    - Back button on pages
+    - Social media links
+    - Custom Error 404 page
+    - Custom scrollbar
+    
+    **Size:** 2.12MB
+  </Accordion>
+
+  <Accordion title="Apple Style Navigation Bar">
+    **Features:**
+    - Built with HTML, CSS, and JavaScript
+    - Responsive, mobile-friendly
+    - Dark, eyes-friendly
+    - Modern look
+    
+    **Size:** 1.83KB
+  </Accordion>
+
+  <Accordion title="Modern Footer">
+    **Features:**
+    - Built with HTML and CSS
+    - Responsive, mobile-friendly
+    - Dark, eyes-friendly
+    - Shows date and clock
+    
+    **Size:** 2.27KB
+  </Accordion>
+</AccordionGroup>
+
+## WebMiniProjectsSection
+
+Additional mini-projects and utilities (structure similar to WebProjectsSection).
+
+**Location:** `src/components/MadeByArsh/WebMiniProjectsSection.jsx`
+
+## Made by Arsh Page Layout
+
+```jsx pages/made-by-arsh.js
+import { WebProjects } from '@/components/MadeByArsh/WebProjectsSection';
+import { PythonProjects } from '@/components/MadeByArsh/PythonProjectsSection';
+import { WebTemplates } from '@/components/MadeByArsh/WebTemplatesSection';
+
+export default function MadeByArsh() {
+  return (
+    <main className="mx-auto max-w-4xl py-10">
+      <section className="mb-10">
+        <WebProjects />
+      </section>
+      
+      <section className="mb-10">
+        <PythonProjects />
+      </section>
+      
+      <section id="templates">
+        <WebTemplates />
+      </section>
+    </main>
+  );
+}
+```
+
+## Design Patterns
+
+<CardGroup cols={2}>
+  <Card title="Bento Grid" icon="grid">
+    2-column responsive grid for web projects with flexible borders and spacing
+  </Card>
+  
+  <Card title="Horizontal Scroll" icon="arrows-left-right">
+    Touch-friendly carousel for Python projects with navigation buttons
+  </Card>
+  
+  <Card title="Slideshow" icon="images">
+    Multi-screenshot presentation for templates with caption overlays
+  </Card>
+  
+  <Card title="Stagger Animation" icon="wand-magic-sparkles">
+    Framer Motion delays create cascading entrance effects
+  </Card>
+</CardGroup>
+
+## Performance Considerations
+
+<Note>
+  **Image Optimization:** All images use Next.js Image component for automatic optimization, lazy loading, and WebP format.
+</Note>
+
+<Warning>
+  **Scroll Performance:** The horizontal scroll uses `[scrollbar-width:none]` to hide scrollbars. Ensure navigation buttons are visible for accessibility.
+</Warning>
+
+## Related Components
+
+- [Home Components](/components/home) - MadeByArshSection preview
+- [Layout Components](/components/layout) - Footer project links

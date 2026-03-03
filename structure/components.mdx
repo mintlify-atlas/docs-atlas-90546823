@@ -1,0 +1,347 @@
+---
+title: 'Components Architecture'
+description: 'Detailed guide to the component organization and structure in the Arsh Saxena Portfolio'
+---
+
+The project follows a **feature-based component organization** where components are grouped by their functional area or page context. All components live in `src/components/` and are organized into logical subdirectories.
+
+## Component Directory Structure
+
+```
+src/components/
+├── About/                    # About page components
+│   ├── SkillsTableSection.jsx
+│   ├── TextSection.jsx
+│   └── TimelineSection.jsx
+├── Common/                   # Shared/reusable components
+│   └── AnimateBackground.jsx
+├── Connect/                  # Contact form components
+│   ├── Form.jsx
+│   ├── FormInputs.jsx
+│   └── FormLabels.jsx
+├── Home/                     # Home page components
+│   ├── AnimatesImgsSection.jsx
+│   ├── MadeByArshSection.jsx
+│   ├── SocialsSection.jsx
+│   └── Typed.js
+├── Layout/                   # Layout components
+│   ├── Footer/
+│   │   ├── Footer.js
+│   │   ├── MadebyArshLinks.js
+│   │   ├── SocialLinks.js
+│   │   └── TopButton.js
+│   └── Navbar/
+│       ├── Navbar.js
+│       └── NavbarLinks.js
+├── MadeByArsh/              # Portfolio showcase components
+│   ├── PythonProjectsSection.jsx
+│   ├── WebMiniProjectsSection.jsx
+│   ├── WebProjectsSection.jsx
+│   └── WebTemplatesSection.jsx
+├── Resume/                   # Resume page components
+│   └── Content.js
+└── Theme/                    # Theme-related components
+    ├── SetMetaThemeColor.js
+    └── ThemeToggle.js
+```
+
+## Component Categories
+
+<AccordionGroup>
+  <Accordion title="About/ - About Page Components">
+    Components specific to the About page (`/about`) that display personal information, skills, and timeline.
+    
+    ### SkillsTableSection.jsx
+    
+    **Location:** `src/components/About/SkillsTableSection.jsx:163`
+    
+    Displays a responsive grid of technical skills with hover effects:
+    
+    ```jsx
+    export default function SkillsTable() {
+      const [chunkedSkills, setChunkedSkills] = useState([]);
+      
+      useEffect(() => {
+        const updateCols = () => {
+          const width = window.innerWidth;
+          const cols = width >= 1024 ? 6 : width >= 768 ? 4 : 2;
+          setChunkedSkills(chunkArray(skills, cols));
+        };
+        // ...
+      }, []);
+      
+      return (
+        <table className="w-full table-fixed border-collapse">
+          {/* Skills grid */}
+        </table>
+      );
+    }
+    ```
+    
+    **Features:**
+    - Responsive grid (2/4/6 columns based on screen size)
+    - SVG icons imported from `src/assets/about/skills/`
+    - Custom hover animations with brand colors
+    - Client-side component with `'use client'` directive
+    
+    ### TextSection.jsx
+    
+    Displays the introductory text and personal information on the About page.
+    
+    ### TimelineSection.jsx
+    
+    Shows education and work experience in a timeline format with images from `public/about/timeline/`.
+  </Accordion>
+
+  <Accordion title="Common/ - Shared Components">
+    Reusable components used across multiple pages.
+    
+    ### AnimateBackground.jsx
+    
+    **Location:** `src/components/Common/AnimateBackground.jsx`
+    
+    Creates an animated gradient background effect that appears on all pages. Imported in the root layout:
+    
+    ```javascript src/app/layout.js:11
+    import AnimatedBackground from '@/components/Common/AnimateBackground';
+    ```
+    
+    This component provides the signature animated visual effect across the entire portfolio.
+  </Accordion>
+
+  <Accordion title="Connect/ - Contact Form Components">
+    Form components for the `/connect` page, split into logical pieces for better organization.
+    
+    **Component Breakdown:**
+    
+    - **Form.jsx** - Main form container with submission logic
+    - **FormInputs.jsx** - Input field components (text, email, textarea)
+    - **FormLabels.jsx** - Label components with consistent styling
+    
+    This modular approach makes the form easier to maintain and test.
+  </Accordion>
+
+  <Accordion title="Home/ - Home Page Components">
+    Components for the landing page (`/`) that create the first impression.
+    
+    ### Component Files:
+    
+    ```javascript src/app/page.js:3-5
+    import AnimatedImgs from '@/components/Home/AnimatesImgsSection';
+    import SocialsSection from '@/components/Home/SocialsSection';
+    import MadeByArshSection from '@/components/Home/MadeByArshSection';
+    ```
+    
+    - **AnimatesImgsSection.jsx** - Animated image carousel showing portfolio images
+    - **MadeByArshSection.jsx** - Showcase of featured projects and templates
+    - **SocialsSection.jsx** - Social media links with icons
+    - **Typed.js** - Typing animation effect using `typed.js` library
+  </Accordion>
+
+  <Accordion title="Layout/ - Navigation & Footer">
+    Persistent layout components that appear across all pages.
+    
+    ### Navbar Structure
+    
+    ```
+    Layout/Navbar/
+    ├── Navbar.js        # Main navbar container
+    └── NavbarLinks.js   # Navigation links component
+    ```
+    
+    **Usage in root layout:**
+    ```javascript src/app/layout.js:109
+    <Navbar />
+    ```
+    
+    ### Footer Structure
+    
+    ```
+    Layout/Footer/
+    ├── Footer.js          # Main footer container
+    ├── MadebyArshLinks.js # Links to Made by Arsh projects
+    ├── SocialLinks.js     # Social media links
+    └── TopButton.js       # Scroll to top button
+    ```
+    
+    The footer appears at the bottom of every page and is modular for easy updates.
+  </Accordion>
+
+  <Accordion title="MadeByArsh/ - Portfolio Showcase">
+    Components for displaying the project portfolio on `/made-by-arsh`.
+    
+    **Component Organization:**
+    
+    - **PythonProjectsSection.jsx** - Grid of Python/Pygame projects
+    - **WebProjectsSection.jsx** - Full web applications showcase
+    - **WebMiniProjectsSection.jsx** - Small interactive web projects (games)
+    - **WebTemplatesSection.jsx** - Downloadable UI templates
+    
+    Each component fetches data from `src/data/` files:
+    
+    ```javascript
+    import { templateData } from '@/data/webTemplatesBase';
+    import { webProjectsData } from '@/data/webProjectsBase';
+    ```
+  </Accordion>
+
+  <Accordion title="Resume/ - Resume Display">
+    ### Content.js
+    
+    **Location:** `src/components/Resume/Content.js`
+    
+    Displays the resume/CV content on the `/resume` page. This component handles the presentation of work experience, education, and achievements.
+  </Accordion>
+
+  <Accordion title="Theme/ - Dark Mode System">
+    Theme-related components for the light/dark mode toggle functionality.
+    
+    ### SetMetaThemeColor.js
+    
+    **Location:** `src/components/Theme/SetMetaThemeColor.js`
+    
+    Updates the browser's theme-color meta tag based on the current theme:
+    
+    ```javascript src/app/layout.js:108
+    <SetMetaThemeColor />
+    ```
+    
+    ### ThemeToggle.js
+    
+    Provides the UI toggle button for switching between light and dark themes. Uses `next-themes` for theme management.
+  </Accordion>
+</AccordionGroup>
+
+## Component Patterns
+
+### Client vs Server Components
+
+The project leverages React Server Components (default in App Router) with selective client components:
+
+<CodeGroup>
+```jsx Server Component (default)
+// No directive needed - server component by default
+export default function TextSection() {
+  return (
+    <section>
+      <p>Static content rendered on the server</p>
+    </section>
+  );
+}
+```
+
+```jsx Client Component
+'use client';
+
+import { useState, useEffect } from 'react';
+
+export default function SkillsTable() {
+  const [chunkedSkills, setChunkedSkills] = useState([]);
+  // Client-side interactivity
+}
+```
+</CodeGroup>
+
+**Use `'use client'` when:**
+- Using React hooks (`useState`, `useEffect`, etc.)
+- Adding event listeners
+- Accessing browser APIs
+- Using third-party libraries that require client-side execution
+
+### File Naming Conventions
+
+<Note>
+  The project uses a mix of `.js` and `.jsx` extensions:
+  - **Layout components** - `.js` (Navbar.js, Footer.js)
+  - **Page sections** - `.jsx` (SkillsTableSection.jsx, AnimatesImgsSection.jsx)
+  
+  Both extensions work identically in Next.js. The `.jsx` extension explicitly indicates JSX usage.
+</Note>
+
+## Assets Organization
+
+### SVG Icons
+
+Skill icons and other SVGs are stored in `src/assets/`:
+
+```
+src/assets/about/skills/
+├── bootstrap.svg
+├── css.svg
+├── html.svg
+├── javascript.svg
+├── nextjs.svg
+├── python.svg
+├── react.svg
+├── tailwindcss.svg
+└── ... (24 skill icons total)
+```
+
+**Import pattern:**
+```jsx src/components/About/SkillsTableSection.jsx:7-10
+import CppIcon from '@/assets/about/skills/cpp.svg';
+import PythonIcon from '@/assets/about/skills/python.svg';
+import NextjsIcon from '@/assets/about/skills/nextjs.svg';
+import TailwindcssIcon from '@/assets/about/skills/tailwindcss.svg';
+```
+
+<Tip>
+  SVGs are imported as React components thanks to `@svgr/webpack` configuration in `next.config.js`.
+</Tip>
+
+## Component Composition Example
+
+Here's how components compose on the home page:
+
+```javascript src/app/page.js:15-31
+export default function Home() {
+  return (
+    <>
+      <div className="m-auto max-w-[980px]">
+        <section className="...">
+          <AnimatedImgs />
+        </section>
+        <section className="...">
+          <SocialsSection />
+        </section>
+        <section className="...">
+          <MadeByArshSection />
+        </section>
+      </div>
+    </>
+  );
+}
+```
+
+Each section is wrapped in semantic HTML with consistent Tailwind styling.
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Single Responsibility" icon="bullseye">
+    Each component has one clear purpose. Form components are split into Form, FormInputs, and FormLabels.
+  </Card>
+  <Card title="Colocation" icon="folder-tree">
+    Components are grouped by feature/page, making related code easy to find.
+  </Card>
+  <Card title="Server-First" icon="server">
+    Components are server components by default, only adding 'use client' when needed.
+  </Card>
+  <Card title="Path Aliases" icon="at">
+    Use `@/` imports for clean, maintainable import paths.
+  </Card>
+</CardGroup>
+
+## Related Documentation
+
+<CardGroup cols={3}>
+  <Card title="Routing" icon="route" href="/structure/routing">
+    Learn how components are used in pages
+  </Card>
+  <Card title="Styling" icon="palette" href="/structure/styling">
+    Explore Tailwind CSS styling approach
+  </Card>
+  <Card title="Modifying Content" icon="pen-to-square" href="/guides/modifying-content">
+    Working with static data files
+  </Card>
+</CardGroup>

@@ -1,0 +1,166 @@
+---
+title: 'Project Structure Overview'
+description: 'High-level overview of the Arsh Saxena Portfolio project architecture and directory organization'
+---
+
+The Arsh Saxena Portfolio is built with **Next.js 15** using the App Router architecture, React 19, and Tailwind CSS. The project follows a modern, component-based structure optimized for performance and maintainability.
+
+## Directory Structure
+
+Here's the complete directory tree of the project:
+
+```
+.
+├── public/                    # Static assets and public files
+│   ├── about/                # About page images
+│   ├── emojis/               # Emoji assets
+│   ├── images/               # General images
+│   ├── made-by-arsh/         # Project showcase assets
+│   │   ├── python-projects/
+│   │   ├── web-projects/
+│   │   └── web-templates/
+│   ├── social/               # Social media icons
+│   └── robots.txt
+├── src/                      # Source code directory
+│   ├── app/                  # Next.js App Router pages
+│   ├── assets/               # SVG assets and icons
+│   ├── components/           # React components
+│   ├── data/                 # Static data and configuration
+│   ├── hooks/                # Custom React hooks
+│   ├── lib/                  # Utility functions
+│   └── styles/               # Global styles
+├── tailwind.config.js        # Tailwind CSS configuration
+├── next.config.js            # Next.js configuration
+└── package.json              # Project dependencies
+```
+
+## Top-Level Directories
+
+<AccordionGroup>
+  <Accordion title="public/ - Static Assets">
+    Contains all static files served directly by Next.js:
+    
+    - **about/** - Timeline images for education and work experience
+    - **emojis/** - WebP emoji images used throughout the site
+    - **images/** - Portfolio images (img1.webp through img7.webp)
+    - **made-by-arsh/** - Showcased projects including:
+      - Python projects (Snake, Ping Pong, Space Invaders, etc.)
+      - Web projects (interactive games and apps)
+      - Web templates (downloadable UI components)
+    - **social/** - Social media platform icons
+    - **download/** - ZIP files of downloadable templates
+    
+    All images are optimized in WebP format for performance.
+  </Accordion>
+
+  <Accordion title="src/ - Source Code">
+    The main application source code organized into logical subdirectories:
+    
+    - **app/** - Next.js 15 App Router structure with file-based routing
+    - **assets/** - SVG icons and skill badges
+    - **components/** - Reusable React components organized by feature
+    - **data/** - Static data files for projects, templates, and social links
+    - **hooks/** - Custom React hooks (e.g., `useOutsideClick`)
+    - **lib/** - Utility functions like `cn()` for className merging
+    - **styles/** - Global CSS with Tailwind directives and CSS variables
+  </Accordion>
+
+  <Accordion title="Configuration Files">
+    - **tailwind.config.js** - Tailwind CSS customization with custom colors, fonts (Geist Sans), and design tokens
+    - **next.config.js** - Next.js configuration including image optimization and redirects
+    - **postcss.config.js** - PostCSS configuration for Tailwind
+    - **jsconfig.json** - Path aliases (`@/` maps to `src/`)
+    - **components.json** - shadcn/ui component configuration
+    - **next-sitemap.config.js** - XML sitemap generation
+    - **vercel.json** - Vercel deployment configuration
+  </Accordion>
+</AccordionGroup>
+
+## Next.js 15 App Router Architecture
+
+The project uses the **App Router** (introduced in Next.js 13+, now stable in Next.js 15) which provides:
+
+<CardGroup cols={2}>
+  <Card title="File-Based Routing" icon="folder-tree">
+    Routes are defined by the folder structure in `src/app/`. Each folder with a `page.js` file becomes a route.
+  </Card>
+  <Card title="React Server Components" icon="server">
+    Components are Server Components by default, reducing client-side JavaScript and improving performance.
+  </Card>
+  <Card title="Layouts" icon="layout">
+    Shared UI across routes using `layout.js` files. The root layout includes navigation, footer, and theme setup.
+  </Card>
+  <Card title="Dynamic Routes" icon="route">
+    Dynamic segments like `[slug]` enable parameterized routes for project templates and web projects.
+  </Card>
+</CardGroup>
+
+## Technology Stack
+
+```json package.json
+{
+  "dependencies": {
+    "next": "15.5.9",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "tailwindcss": "^3.4.13",
+    "geist": "^1.4.2",
+    "@fontsource/geist-sans": "^5.2.5",
+    "motion": "^12.12.2",
+    "typed.js": "^2.1.0",
+    "next-themes": "^0.4.6"
+  }
+}
+```
+
+<Tip>
+  The project uses **React 19** with concurrent features and **Next.js 15** for the latest performance optimizations.
+</Tip>
+
+## Key Features
+
+- **Server-Side Rendering (SSR)** - Fast initial page loads with SEO optimization
+- **Static Generation** - Pre-rendered pages for optimal performance
+- **Dynamic Imports** - Code splitting for reduced bundle sizes
+- **Image Optimization** - Automatic WebP conversion and responsive images
+- **Font Optimization** - Geist Sans font with automatic subsetting
+- **Theme Support** - Light/dark mode with CSS variables
+- **Analytics** - Vercel Analytics and Speed Insights integration
+
+## Path Aliases
+
+The project uses `@/` as an alias for the `src/` directory:
+
+```javascript jsconfig.json
+{
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  }
+}
+```
+
+**Example usage:**
+```javascript
+import Navbar from '@/components/Layout/Navbar/Navbar';
+import { templateData } from '@/data/webTemplatesBase';
+import '@/styles/global.css';
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Components" icon="puzzle-piece" href="/structure/components">
+    Explore the component organization and architecture
+  </Card>
+  <Card title="Routing" icon="route" href="/structure/routing">
+    Learn about the App Router setup and route structure
+  </Card>
+  <Card title="Styling" icon="palette" href="/structure/styling">
+    Discover the Tailwind CSS configuration and theming
+  </Card>
+  <Card title="Getting Started" icon="rocket" href="/installation">
+    Set up your development environment
+  </Card>
+</CardGroup>

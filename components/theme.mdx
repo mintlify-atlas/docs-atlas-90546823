@@ -1,0 +1,458 @@
+---
+title: Theme Components
+description: Dark mode implementation with theme toggle and meta theme color synchronization
+---
+
+The theme system provides a robust dark mode implementation with system preference detection, localStorage persistence, and browser chrome color synchronization.
+
+## ThemeToggle
+
+Three-option theme switcher (Light/Dark/Auto) with visual feedback.
+
+**Location:** `src/components/Theme/ThemeToggle.js`
+
+### Features
+
+- Three theme modes: Light, Dark, System (Auto)
+- localStorage persistence
+- System preference detection
+- Dynamic theme switching
+- Visual selection indicators
+- Automatic system theme tracking
+
+### Implementation
+
+<CodeGroup>
+
+```javascript ThemeToggle.js
+'use client';
+
+import { useEffect, useState } from 'react';
+
+export default function ThemeToggle() {
+  const [isMounted, setIsMounted] = useState(false);
+  const [isDark, setIsDark] = useState(false);
+  const [currentTheme, setCurrentTheme] = useState('system');
+
+  useEffect(() => {
+    setIsMounted(true);
+
+    const storedTheme = localStorage.getItem('theme');
+    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const initialTheme = storedTheme || 'system';
+    const initialDark = storedTheme ? storedTheme === 'dark' : systemPrefersDark;
+
+    document.documentElement.classList.toggle('dark', initialDark);
+    setIsDark(initialDark);
+    setCurrentTheme(initialTheme);
+
+    // Listen for system theme changes
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleSystemChange = (e) => {
+      if (!localStorage.getItem('theme')) {
+        const newSystemDark = e.matches;
+        document.documentElement.classList.toggle('dark', newSystemDark);
+        setIsDark(newSystemDark);
+        setCurrentTheme('system');
+      }
+    };
+
+    mediaQuery.addEventListener('change', handleSystemChange);
+    return () => mediaQuery.removeEventListener('change', handleSystemChange);
+  }, []);
+
+  const setTheme = (theme) => {
+    if (theme === 'system') {
+      localStorage.removeItem('theme');
+      const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.classList.toggle('dark', systemDark);
+      setIsDark(systemDark);
+    } else {
+      const newIsDark = theme === 'dark';
+      document.documentElement.classList.toggle('dark', newIsDark);
+      localStorage.setItem('theme', theme);
+      setIsDark(newIsDark);
+    }
+    setCurrentTheme(theme);
+  };
+
+  const buttonClass = (theme) => {
+    const isSelected = currentTheme === theme;
+    return `
+      px-2 rounded-full flex items-center gap-2
+      ${isSelected ? 'bg-[var(--main)] dark:bg-[var(--main)] text-[#f5f5f7]' : 'pointer hover:bg-[var(--accent)] hover:text-[#f5f5f7]'}
+    `;
+  };
+
+  if (!isMounted) return null;
+
+  return (
+    <div className="flex flex-col items-start gap-2 text-xs">
+      <div className="flex flex-row space-x-1 rounded-full border border-solid border-[var(--main)] p-[2px]">
+        <button onClick={() => setTheme('light')} className={buttonClass('light')}>
+          Light
+        </button>
+        <button onClick={() => setTheme('dark')} className={buttonClass('dark')}>
+          Dark
+        </button>
+        <button onClick={() => setTheme('system')} className={buttonClass('system')}>
+          Auto
+        </button>
+      </div>
+    </div>
+  );
+}
+```
+
+</CodeGroup>
+
+### Theme Logic Breakdown
+
+<AccordionGroup>
+  <Accordion title="Initialization">
+    On mount, the component:
+    1. Checks localStorage for saved preference
+    2. Falls back to system preference if no saved theme
+    3. Applies the dark class to `<html>` if needed
+    4. Sets up listener for system theme changes
+  </Accordion>
+
+  <Accordion title="System Mode">
+    When "Auto" is selected:
+    - Removes theme from localStorage
+    - Reads current system preference
+    - Listens for system theme changes
+    - Automatically switches when OS theme changes
+  </Accordion>
+
+  <Accordion title="Manual Modes">
+    When "Light" or "Dark" is selected:
+    - Saves preference to localStorage
+    - Overrides system preference
+    - Persists across sessions
+    - Stops listening to system changes
+  </Accordion>
+
+  <Accordion title="Hydration Safety">
+    Uses `isMounted` state to prevent hydration mismatches:
+    ```javascript
+    if (!isMounted) return null;
+    ```
+    This ensures the component only renders after client-side JavaScript loads.
+  </Accordion>
+</AccordionGroup>
+
+### CSS Variables
+
+The theme system relies on CSS custom properties that change based on the `.dark` class:
+
+<Tabs>
+  <Tab title="Light Theme">
+    ```css
+    :root {
+      --foreground: #0a0a0a;
+      --background: #f5f5f7;
+      --surface: rgba(245, 245, 247, 0.8);
+      --main: #0a0a0a;
+      --accent: #007aff;
+      --muted: #6b7280;
+      --border-default: #e5e7eb;
+    }
+    ```
+  </Tab>
+  
+  <Tab title="Dark Theme">
+    ```css
+    .dark {
+      --foreground: #f5f5f7;
+      --background: #0a0a0a;
+      --surface: rgba(10, 10, 10, 0.8);
+      --main: #f5f5f7;
+      --accent: #0a84ff;
+      --muted: #9ca3af;
+      --border-default: #333333;
+    }
+    ```
+  </Tab>
+</Tabs>
+
+### Usage Example
+
+```jsx Footer Integration
+import ThemeToggle from '@/components/Theme/ThemeToggle';
+
+export default function Footer() {
+  return (
+    <footer>
+      <div className="flex justify-between">
+        <div>Made with ❤️ in India.</div>
+        <ThemeToggle />
+      </div>
+    </footer>
+  );
+}
+```
+
+## SetMetaThemeColor
+
+Synchronizes browser chrome color with current theme.
+
+**Location:** `src/components/Theme/SetMetaThemeColor.js`
+
+### Features
+
+- Updates `<meta name="theme-color">` tag
+- Watches for theme changes
+- Creates meta tag if missing
+- Improves mobile browser integration
+
+### Implementation
+
+```javascript SetMetaThemeColor.js
+'use client';
+
+import { useEffect } from 'react';
+
+export default function SetThemeColor() {
+  useEffect(() => {
+    const updateThemeColor = () => {
+      const isDark = document.documentElement.classList.contains('dark');
+      const themeTag = document.querySelector('meta[name="theme-color"]');
+      
+      if (themeTag) {
+        themeTag.setAttribute('content', isDark ? '#0a0a0a' : '#f5f5f7');
+      } else {
+        const newThemeTag = document.createElement('meta');
+        newThemeTag.name = 'theme-color';
+        newThemeTag.content = isDark ? '#0a0a0a' : '#f5f5f7';
+        document.head.appendChild(newThemeTag);
+      }
+    };
+
+    updateThemeColor();
+
+    // Watch for dark class changes
+    const observer = new MutationObserver(updateThemeColor);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class'],
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  return null;
+}
+```
+
+### How It Works
+
+<Steps>
+  <Step title="Initial Update">
+    On mount, checks if `.dark` class exists and sets theme-color accordingly
+  </Step>
+  
+  <Step title="MutationObserver">
+    Sets up observer to watch for changes to the `class` attribute on `<html>`
+  </Step>
+  
+  <Step title="Dynamic Updates">
+    When theme changes (via ThemeToggle), observer triggers and updates meta tag
+  </Step>
+  
+  <Step title="Cleanup">
+    Disconnects observer on component unmount
+  </Step>
+</Steps>
+
+### Theme Colors
+
+<ResponseField name="Light Mode" type="#f5f5f7">
+  Soft white background matching the light theme
+</ResponseField>
+
+<ResponseField name="Dark Mode" type="#0a0a0a">
+  Deep black background matching the dark theme
+</ResponseField>
+
+### Root Layout Integration
+
+```jsx app/layout.js
+import SetMetaThemeColor from '@/components/Theme/SetMetaThemeColor';
+
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en">
+      <head>
+        <SetMetaThemeColor />
+      </head>
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+<Note>
+  The SetMetaThemeColor component must be placed in the `<head>` to properly create/update the meta tag.
+</Note>
+
+## Theme Implementation Guide
+
+### Step 1: Setup CSS Variables
+
+Define your theme colors in your global CSS:
+
+```css globals.css
+:root {
+  --foreground: #0a0a0a;
+  --background: #f5f5f7;
+  --surface: rgba(245, 245, 247, 0.8);
+  --main: #0a0a0a;
+  --accent: #007aff;
+  --muted: #6b7280;
+  --border-default: #e5e7eb;
+}
+
+.dark {
+  --foreground: #f5f5f7;
+  --background: #0a0a0a;
+  --surface: rgba(10, 10, 10, 0.8);
+  --main: #f5f5f7;
+  --accent: #0a84ff;
+  --muted: #9ca3af;
+  --border-default: #333333;
+}
+```
+
+### Step 2: Configure Tailwind
+
+```javascript tailwind.config.js
+module.exports = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        foreground: 'var(--foreground)',
+        background: 'var(--background)',
+        surface: 'var(--surface)',
+        main: 'var(--main)',
+        accent: 'var(--accent)',
+        muted: 'var(--muted)',
+      },
+    },
+  },
+};
+```
+
+### Step 3: Add Theme Components
+
+```jsx app/layout.js
+import SetMetaThemeColor from '@/components/Theme/SetMetaThemeColor';
+
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en">
+      <head>
+        <SetMetaThemeColor />
+      </head>
+      <body className="bg-[var(--background)] text-[var(--foreground)]">
+        {children}
+      </body>
+    </html>
+  );
+}
+```
+
+### Step 4: Use Theme Toggle
+
+Add to your footer or navigation:
+
+```jsx
+import ThemeToggle from '@/components/Theme/ThemeToggle';
+
+<ThemeToggle />
+```
+
+## Benefits of This Approach
+
+<CardGroup cols={2}>
+  <Card title="No External Dependencies" icon="cube">
+    Pure React implementation without next-themes or similar libraries
+  </Card>
+  
+  <Card title="Instant Theme Switch" icon="bolt">
+    CSS variables enable instant color changes without re-renders
+  </Card>
+  
+  <Card title="System Integration" icon="desktop">
+    Respects OS theme preference with automatic tracking
+  </Card>
+  
+  <Card title="Persistent Preferences" icon="database">
+    localStorage ensures theme choice persists across sessions
+  </Card>
+  
+  <Card title="SSR Compatible" icon="server">
+    Handles hydration properly with mounted checks
+  </Card>
+  
+  <Card title="Mobile Optimized" icon="mobile">
+    Meta theme-color provides native browser chrome integration
+  </Card>
+</CardGroup>
+
+## Advanced Customization
+
+### Adding More Theme Options
+
+To add additional themes (e.g., "Sepia"):
+
+<Steps>
+  <Step title="Define CSS Variables">
+    ```css
+    .sepia {
+      --foreground: #5c4a3c;
+      --background: #f4ecd8;
+      /* ... more variables */
+    }
+    ```
+  </Step>
+  
+  <Step title="Update ThemeToggle">
+    Add button for new theme and update logic to apply the class
+  </Step>
+  
+  <Step title="Update SetMetaThemeColor">
+    Add color mapping for the new theme
+  </Step>
+</Steps>
+
+### Theme-Specific Animations
+
+```jsx Animated Theme Toggle
+const setTheme = (theme) => {
+  // Trigger view transition if supported
+  if (document.startViewTransition) {
+    document.startViewTransition(() => {
+      // Apply theme changes
+    });
+  } else {
+    // Fallback for browsers without View Transitions API
+  }
+};
+```
+
+## Browser Compatibility
+
+<Note>
+  **MutationObserver:** Supported in all modern browsers (IE11+)
+  
+  **CSS Variables:** Supported in all modern browsers (IE not supported)
+  
+  **matchMedia:** Supported in all modern browsers (IE10+)
+</Note>
+
+## Related Components
+
+- [Layout Components](/components/layout) - Footer integration
+- [Architecture](/architecture/project-structure) - Global styles setup

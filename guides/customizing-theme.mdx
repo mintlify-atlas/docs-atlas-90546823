@@ -1,0 +1,214 @@
+---
+title: Customizing Theme
+description: Learn how to customize colors, theme variables, and visual appearance of your portfolio
+---
+
+This guide will walk you through customizing the visual theme of your portfolio, including colors, CSS variables, and light/dark mode settings.
+
+## Understanding the Theme System
+
+The portfolio uses CSS custom properties (variables) defined in `src/styles/global.css` combined with Tailwind CSS for styling. The theme supports both light and dark modes with seamless transitions.
+
+## Customizing Colors
+
+<Steps>
+  <Step title="Open the global CSS file">
+    Navigate to `src/styles/global.css` in your project. This file contains all theme variables.
+  </Step>
+
+  <Step title="Understand the color structure">
+    The theme uses two sets of variables:
+    - `:root` - Light mode colors (default)
+    - `.dark` - Dark mode colors
+
+    ```css src/styles/global.css
+    :root {
+      --background: #f5f5f7;
+      --foreground: #0a0a0a;
+      --main: #166534;
+      --accent: #22c55e;
+      --surface: #dadada66;
+      --overlay: #131313;
+      --muted: #393939;
+      --border-default: #a8a8a8;
+    }
+
+    .dark {
+      --background: #0a0a0a;
+      --foreground: #f5f5f7;
+      --main: #166534;
+      --accent: #22c55e;
+      --surface: #13131380;
+      --overlay: #dadada;
+      --muted: #a2a2a9;
+      --border-default: #333333;
+    }
+    ```
+  </Step>
+
+  <Step title="Modify color values">
+    Update the hex color values to match your preferred color scheme. Here's what each variable controls:
+
+    | Variable | Purpose | Example Usage |
+    |----------|---------|---------------|
+    | `--background` | Main background color | Body background, page background |
+    | `--foreground` | Primary text color | Body text, headings |
+    | `--main` | Primary brand color | Important elements, links |
+    | `--accent` | Accent/highlight color | Hover states, active elements |
+    | `--surface` | Card/surface backgrounds | Cards, containers |
+    | `--overlay` | Overlay elements | Modals, dropdowns |
+    | `--muted` | Muted/secondary text | Captions, descriptions |
+    | `--border-default` | Border color | Dividers, outlines |
+  </Step>
+
+  <Step title="Save and test">
+    Save the file and run `npm run dev` to see your changes. Toggle between light and dark modes to ensure both themes look good.
+  </Step>
+</Steps>
+
+## Changing Accent Colors
+
+The accent color (`--accent`) and main color (`--main`) are used throughout the site for branding.
+
+<CodeGroup>
+```css Green Theme (Default)
+--main: #166534;
+--accent: #22c55e;
+```
+
+```css Blue Theme
+--main: #1e40af;
+--accent: #3b82f6;
+```
+
+```css Purple Theme
+--main: #6b21a8;
+--accent: #a855f7;
+```
+
+```css Orange Theme
+--main: #c2410c;
+--accent: #f97316;
+```
+</CodeGroup>
+
+<Warning>
+  Make sure to update both `:root` and `.dark` sections to maintain consistency across light and dark modes.
+</Warning>
+
+## Advanced Tailwind Configuration
+
+For more advanced theming, you can modify the Tailwind configuration in `tailwind.config.js`.
+
+### Custom Font Families
+
+The portfolio uses Geist Sans by default. To change the font:
+
+```js tailwind.config.js
+theme: {
+  extend: {
+    fontFamily: {
+      sans: ['var(--font-geist)', ...defaultTheme.fontFamily.sans],
+      // Add your custom font
+      custom: ['Your Font Name', 'sans-serif'],
+    },
+  },
+}
+```
+
+Then update the font import in `src/styles/global.css`:
+
+```css
+@import 'your-font-package/styles.css';
+
+:root {
+  --font-geist: 'Your Font Name', sans-serif;
+}
+```
+
+### Custom Border Radius
+
+Modify the border radius values in `tailwind.config.js`:
+
+```js tailwind.config.js
+theme: {
+  extend: {
+    borderRadius: {
+      lg: 'var(--radius)',
+      md: 'calc(var(--radius) - 2px)',
+      sm: 'calc(var(--radius) - 4px)',
+    },
+  },
+}
+```
+
+Then define `--radius` in your CSS:
+
+```css src/styles/global.css
+:root {
+  --radius: 0.5rem; /* Adjust this value */
+}
+```
+
+## Theme Transitions
+
+The portfolio includes smooth transitions when switching between light and dark modes:
+
+```css src/styles/global.css
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist);
+  transition:
+    background 0.5s,
+    color 0.5s;
+}
+```
+
+You can adjust the transition duration or add more properties:
+
+```css
+body {
+  transition:
+    background 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease;
+}
+```
+
+## Testing Your Theme
+
+<Steps>
+  <Step title="Start the development server">
+    ```bash
+    npm run dev
+    ```
+  </Step>
+
+  <Step title="Test both themes">
+    Toggle between light and dark modes using the theme switcher in the navigation bar.
+  </Step>
+
+  <Step title="Check contrast">
+    Ensure text is readable on all backgrounds. Use browser DevTools to check color contrast ratios (aim for at least 4.5:1 for normal text).
+  </Step>
+
+  <Step title="Test on different pages">
+    Navigate through all pages (Home, About, Projects, Connect) to ensure the theme works everywhere.
+  </Step>
+</Steps>
+
+<Tip>
+  Use online tools like [Coolors](https://coolors.co) or [Adobe Color](https://color.adobe.com) to generate harmonious color palettes for your theme.
+</Tip>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Adding Projects" icon="folder-plus" href="/guides/adding-projects">
+    Learn how to add your own projects to the portfolio
+  </Card>
+  <Card title="Modifying Content" icon="pen-to-square" href="/guides/modifying-content">
+    Update personal information and page content
+  </Card>
+</CardGroup>

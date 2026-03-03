@@ -1,0 +1,475 @@
+---
+title: Animation System
+description: Learn about the animation implementations including the animated gradient background, typed.js integration, and Framer Motion animations
+---
+
+The Arsh Saxena Portfolio uses multiple animation systems to create an engaging, interactive user experience. This includes an animated gradient background, typing effects, and smooth page transitions.
+
+## Overview
+
+The portfolio implements animations through:
+
+- **Animated Gradient Background**: Dynamic particle system using react-gradient-animation
+- **Typed.js Integration**: Typing animation effects for dynamic text
+- **Framer Motion**: Smooth animations for image carousels and transitions
+- **CSS Transitions**: Theme-aware color transitions
+
+## Animated Background
+
+The animated background creates a dynamic gradient effect with moving particles that adapts to dark mode.
+
+### Implementation
+
+```jsx src/components/Common/AnimateBackground.jsx
+'use client';
+
+import { useEffect, useRef, useState } from 'react';
+import { GradientBackground } from 'react-gradient-animation';
+
+export default function AnimatedBackground() {
+  const [mounted, setMounted] = useState(false);
+  const [isDark, setIsDark] = useState(false);
+  const wrapperRef = useRef(null);
+  const [staticImage, setStaticImage] = useState(null);
+
+  useEffect(() => {
+    setMounted(true);
+
+    // Detect initial theme
+    const getTheme = () => {
+      const storedTheme = localStorage.getItem('theme');
+      const systemPrefersDark = window.matchMedia(
+        '(prefers-color-scheme: dark)'
+      ).matches;
+      return storedTheme === 'dark' || (!storedTheme && systemPrefersDark);
+    };
+
+    setIsDark(getTheme());
+
+    // Watch for theme changes
+    const observer = new MutationObserver(() => {
+      const isNowDark = document.documentElement.classList.contains('dark');
+      setIsDark(isNowDark);
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class'],
+    });
+
+    // Convert to static image after 5 seconds for performance
+    const timeout = setTimeout(() => {
+      const canvas = wrapperRef.current?.querySelector('canvas');
+      if (canvas) {
+        const dataURL = canvas.toDataURL();
+        setStaticImage(dataURL);
+      }
+    }, 5000);
+
+    return () => {
+      observer.disconnect();
+      clearTimeout(timeout);
+    };
+  }, []);
+
+  if (!mounted) return null;
+
+  const backgroundColor = isDark ? '#0a0a0a' : '#f5f5f7';
+  const particleColors = isDark
+    ? ['#0a0a0a', '#0a0a0a', '#22c55e']
+    : ['#f5f5f7', '#22c55e', '#22c55e'];
+
+  return (
+    <div
+      ref={wrapperRef}
+      style={{
+        position: 'fixed',
+        inset: 0,
+        height: '100dvh',
+        zIndex: -1,
+        overflow: 'hidden',
+      }}
+    >
+      {!staticImage && (
+        <GradientBackground
+          count={20}
+          size={{ min: 500, max: 750, pulse: 0.5 }}
+          speed={{ x: { min: 0.5, max: 2 }, y: { min: 0.5, max: 2 } }}
+          colors={{
+            background: backgroundColor,
+            particles: particleColors,
+          }}
+          blending="overlay"
+          opacity={{ center: 0.5, edge: 0 }}
+        />
+      )}
+      {staticImage && (
+        <img
+          src={staticImage}
+          alt="Static Background"
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+          }}
+        />
+      )}
+    </div>
+  );
+}
+```
+
+### Configuration Options
+
+<ParamField path="count" type="number" default="20">
+  Number of animated particles in the background
+</ParamField>
+
+<ParamField path="size" type="object">
+  Particle size configuration:
+  - `min`: Minimum particle size (500)
+  - `max`: Maximum particle size (750)
+  - `pulse`: Pulsing animation intensity (0.5)
+</ParamField>
+
+<ParamField path="speed" type="object">
+  Particle movement speed:
+  - `x`: Horizontal speed range (0.5 to 2)
+  - `y`: Vertical speed range (0.5 to 2)
+</ParamField>
+
+<ParamField path="colors" type="object">
+  Color configuration:
+  - `background`: Base background color
+  - `particles`: Array of particle colors (adapts to theme)
+</ParamField>
+
+<ParamField path="blending" type="string" default="overlay">
+  CSS blend mode for particle rendering
+</ParamField>
+
+<ParamField path="opacity" type="object">
+  Opacity configuration:
+  - `center`: Opacity at particle center (0.5)
+  - `edge`: Opacity at particle edges (0)
+</ParamField>
+
+### Theme Adaptation
+
+The background automatically adapts colors based on the theme:
+
+```javascript
+const backgroundColor = isDark ? '#0a0a0a' : '#f5f5f7';
+const particleColors = isDark
+  ? ['#0a0a0a', '#0a0a0a', '#22c55e']  // Dark mode: mostly dark with green accent
+  : ['#f5f5f7', '#22c55e', '#22c55e'];  // Light mode: light with green accents
+```
+
+### Performance Optimization
+
+After 5 seconds, the animated background converts to a static image:
+
+```javascript
+const timeout = setTimeout(() => {
+  const canvas = wrapperRef.current?.querySelector('canvas');
+  if (canvas) {
+    const dataURL = canvas.toDataURL();
+    setStaticImage(dataURL);
+  }
+}, 5000);
+```
+
+This optimization:
+- Reduces CPU/GPU usage
+- Improves battery life on mobile devices
+- Maintains visual appeal
+- Preserves the initial animation experience
+
+## Typed.js Integration
+
+The typing animation effect is used for dynamic text displays, particularly for the name on the homepage.
+
+### Implementation
+
+```jsx src/components/Home/Typed.js
+'use client';
+
+import { useEffect, useRef, useState } from 'react';
+import Typed from 'typed.js';
+
+export default function TypedName({ strings = ['Default Text'] }) {
+  const el = useRef(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+
+    const typed = new Typed(el.current, {
+      strings,
+      typeSpeed: 50,
+      showCursor: false,
+    });
+
+    return () => typed.destroy();
+  }, [strings, mounted]);
+
+  if (!mounted) return null;
+
+  return <span ref={el}></span>;
+}
+```
+
+### Usage Example
+
+```jsx
+import TypedName from '@/components/Home/Typed';
+
+<h3 className="text-[33px] font-bold leading-[50px] text-[var(--foreground)] md:text-[40px]">
+  <TypedName strings={['Arsh Saxena']} />
+</h3>
+```
+
+### Configuration
+
+<ParamField path="strings" type="array" required>
+  Array of strings to type out sequentially
+</ParamField>
+
+<ParamField path="typeSpeed" type="number" default="50">
+  Typing speed in milliseconds per character
+</ParamField>
+
+<ParamField path="showCursor" type="boolean" default="false">
+  Whether to show the blinking cursor
+</ParamField>
+
+<Note>
+  The component uses client-side mounting checks to prevent hydration mismatches in Next.js.
+</Note>
+
+## Framer Motion Animations
+
+Framer Motion powers the image carousel and other interactive animations.
+
+### Image Carousel Animation
+
+```jsx src/components/Home/AnimatesImgsSection.jsx
+import { motion, AnimatePresence } from 'framer-motion';
+
+const AnimatedImgsSection = ({ autoplay = false }) => {
+  const imgs = [
+    { src: '/images/img1.webp' },
+    { src: '/images/img2.webp' },
+    { src: '/images/img3.webp' },
+    // More images...
+  ];
+
+  const [active, setActive] = useState(0);
+  const [rotations, setRotations] = useState([]);
+
+  // Generate random rotations for each image
+  useEffect(() => {
+    const generated = imgs.map(() => Math.floor(Math.random() * 21) - 10);
+    setRotations(generated);
+  }, [imgs.length]);
+
+  // Autoplay functionality
+  useEffect(() => {
+    if (autoplay) {
+      const interval = setInterval(handleNext, 5000);
+      return () => clearInterval(interval);
+    }
+  }, [autoplay]);
+
+  return (
+    <div className="relative h-80 w-full">
+      <AnimatePresence>
+        {imgs.map((img, index) => (
+          <motion.div
+            key={img.src}
+            initial={{
+              opacity: 0,
+              scale: 0.9,
+              z: -100,
+              rotate: rotations[index],
+            }}
+            animate={{
+              opacity: isActive(index) ? 1 : 0.7,
+              scale: isActive(index) ? 1 : 0.95,
+              z: isActive(index) ? 0 : -100,
+              rotate: isActive(index) ? 0 : rotations[index],
+              zIndex: isActive(index) ? 40 : imgs.length + 2 - index,
+              y: isActive(index) ? [0, -80, 0] : 0,
+            }}
+            exit={{
+              opacity: 0,
+              scale: 0.9,
+              z: 100,
+              rotate: rotations[index],
+            }}
+            transition={{
+              duration: 0.5,
+              ease: 'easeInOut',
+            }}
+            className="absolute inset-0 origin-bottom"
+          >
+            <img
+              src={img.src}
+              alt={img.name}
+              className="h-full w-full rounded-3xl object-cover object-center"
+            />
+          </motion.div>
+        ))}
+      </AnimatePresence>
+    </div>
+  );
+};
+```
+
+### Animation Properties
+
+<ParamField path="initial" type="object">
+  Starting state of the animation:
+  - `opacity`: 0 (invisible)
+  - `scale`: 0.9 (slightly smaller)
+  - `z`: -100 (behind)
+  - `rotate`: Random rotation
+</ParamField>
+
+<ParamField path="animate" type="object">
+  Active state of the animation:
+  - `opacity`: 1 for active, 0.7 for inactive
+  - `scale`: 1 for active, 0.95 for inactive
+  - `z`: 0 for active, -100 for inactive
+  - `rotate`: 0 for active, random for inactive
+  - `y`: [0, -80, 0] creates a bounce effect for active image
+</ParamField>
+
+<ParamField path="exit" type="object">
+  Exit state when image leaves:
+  - `opacity`: 0
+  - `scale`: 0.9
+  - `z`: 100 (moves forward before disappearing)
+</ParamField>
+
+<ParamField path="transition" type="object">
+  Animation timing:
+  - `duration`: 0.5 seconds
+  - `ease`: 'easeInOut' for smooth transitions
+</ParamField>
+
+### Card Stack Effect
+
+The carousel creates a card stack effect where:
+1. Active image is fully visible, upright, and centered
+2. Inactive images are slightly faded, scaled down, and rotated
+3. Images stack behind the active one with decreasing z-index
+4. Active image bounces up and down for visual interest
+
+## CSS Transition Animations
+
+The portfolio uses CSS transitions for smooth theme changes:
+
+```css src/styles/global.css
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist);
+  transition:
+    background 0.5s,
+    color 0.5s;
+}
+```
+
+This creates a smooth 0.5-second transition when switching between light and dark modes.
+
+## Layout Integration
+
+The animated background is integrated at the root layout level:
+
+```jsx src/app/layout.js
+import AnimatedBackground from '@/components/Common/AnimateBackground';
+
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en">
+      <body>
+        <AnimatedBackground />
+        <div className="container m-auto max-w-[980px]">
+          <Navbar />
+          {children}
+          <Footer />
+        </div>
+      </body>
+    </html>
+  );
+}
+```
+
+The background:
+- Uses `position: fixed` to stay in place during scrolling
+- Has `zIndex: -1` to stay behind all content
+- Covers the full viewport with `inset: 0`
+
+## Dependencies
+
+The animation system requires these packages:
+
+```json package.json
+{
+  "dependencies": {
+    "react-gradient-animation": "^1.0.7",
+    "typed.js": "^2.1.0",
+    "motion": "^12.12.2",
+    "framer-motion": "^10.x" // via motion package
+  }
+}
+```
+
+<Note>
+  The portfolio uses the `motion` package (version 12.12.2) which includes Framer Motion functionality.
+</Note>
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Performance Considerations">
+    - Convert animated backgrounds to static images after initial display
+    - Use `will-change` CSS property sparingly
+    - Limit the number of simultaneous animations
+    - Test on low-powered devices
+    - Consider reduced-motion preferences
+  </Accordion>
+
+  <Accordion title="Client-Side Rendering">
+    - Use `'use client'` directive for animated components
+    - Implement mounting checks to prevent hydration issues
+    - Handle SSR gracefully by returning null initially
+    - Use `useState` and `useEffect` for client-only features
+  </Accordion>
+
+  <Accordion title="Animation Timing">
+    - Keep transitions under 0.5 seconds for snappy feel
+    - Use `ease-in-out` for natural-looking animations
+    - Coordinate animation durations across components
+    - Add delays strategically for staggered effects
+  </Accordion>
+
+  <Accordion title="Accessibility">
+    - Respect `prefers-reduced-motion` media query
+    - Ensure animations don't interfere with content readability
+    - Provide alternative experiences for users who prefer less motion
+    - Test with screen readers
+  </Accordion>
+</AccordionGroup>
+
+<Warning>
+  Heavy animations can impact performance on mobile devices. Always test on real devices and consider implementing the static image fallback pattern used in the animated background.
+</Warning>

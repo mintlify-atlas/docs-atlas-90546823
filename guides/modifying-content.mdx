@@ -1,0 +1,421 @@
+---
+title: Modifying Content
+description: Learn how to update personal information, social links, metadata, and page content
+---
+
+This guide covers how to modify all the content throughout your portfolio, including personal information, social links, metadata, and SEO settings.
+
+## Updating Personal Information
+
+### Site-wide Metadata
+
+The main metadata is defined in `src/app/layout.js`. This affects SEO, social media previews, and browser display.
+
+<Steps>
+  <Step title="Open the layout file">
+    Navigate to `src/app/layout.js` in your project.
+  </Step>
+
+  <Step title="Update the metadata object">
+    Modify the `metadata` export to reflect your information:
+
+    ```js src/app/layout.js
+    export const metadata = {
+      icons: {
+        icon: '/your-favicon.png',
+        shortcut: '/your-favicon.png',
+        apple: '/your-favicon-apple.png',
+      },
+      openGraph: {
+        title: 'Your Name',
+        description: 'Your portfolio description here',
+        url: 'https://www.yoursite.com',
+        siteName: 'Your Name',
+        images: [
+          {
+            url: 'https://www.yoursite.com/screenshot.png',
+            width: 1200,
+            height: 630,
+            alt: 'www.yoursite.com',
+          },
+        ],
+        locale: 'en_US',
+        type: 'website',
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: 'Your Name',
+        description: 'Your portfolio description here',
+        images: ['https://www.yoursite.com/screenshot.png'],
+        creator: '@yourtwitterhandle',
+      },
+    };
+    ```
+  </Step>
+
+  <Step title="Update Schema.org structured data">
+    Scroll down to the structured data script and update your information:
+
+    ```js src/app/layout.js
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{
+        __html: JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'Person',
+          name: 'Your Name',
+          url: 'https://www.yoursite.com',
+          sameAs: [
+            'https://www.linkedin.com/in/yourprofile',
+            'https://www.twitter.com/yourhandle',
+            'https://www.instagram.com/yourhandle',
+            'https://www.github.com/yourusername',
+          ],
+          jobTitle: 'Your Job Title or Description',
+          image: 'https://www.yoursite.com/your-favicon.png',
+        }),
+      }}
+    />
+    ```
+  </Step>
+</Steps>
+
+<Warning>
+  Make sure to update all URLs to point to your actual domain. Using incorrect URLs can hurt your SEO.
+</Warning>
+
+### Page-Specific Metadata
+
+Each page can have its own metadata. For example, the About page:
+
+```js src/app/about/page.js
+export const metadata = {
+  title: 'About | Your Name',
+  description: 'Learn more about me, my skills, and my journey.',
+};
+```
+
+Update this in each page file:
+- `src/app/page.js` - Home page
+- `src/app/about/page.js` - About page
+- `src/app/connect/page.js` - Connect page
+- `src/app/made-by-arsh/page.js` - Projects page
+
+## Updating Social Links
+
+Social links are managed in `src/data/socialLinksBase.js`.
+
+<Steps>
+  <Step title="Open the social links file">
+    Navigate to `src/data/socialLinksBase.js`.
+  </Step>
+
+  <Step title="Review the structure">
+    Each social link has a key and properties:
+
+    ```js src/data/socialLinksBase.js
+    export const socialLinksBase = {
+      linkedin: {
+        href: 'https://linkedin.com/in/yourprofile',
+        label: 'LinkedIn',
+        icon: '/social/linkedin.webp',
+      },
+      github: {
+        href: 'https://github.com/yourusername',
+        label: 'GitHub',
+        icon: '/social/github.webp',
+      },
+      // ... more links
+    };
+    ```
+  </Step>
+
+  <Step title="Update your URLs">
+    Replace the `href` values with your actual social media profiles.
+  </Step>
+
+  <Step title="Add new social platforms">
+    To add a new platform:
+
+    ```js src/data/socialLinksBase.js
+    export const socialLinksBase = {
+      // ... existing links ...
+      
+      youtube: {
+        href: 'https://youtube.com/@yourchannel',
+        label: 'YouTube',
+        icon: '/social/youtube.webp',
+      },
+    };
+    ```
+
+    Make sure to add the corresponding icon to `/public/social/`.
+  </Step>
+
+  <Step title="Remove platforms">
+    Simply delete the entire platform object to remove it from your portfolio.
+  </Step>
+</Steps>
+
+### Social Platform Properties
+
+<ParamField path="href" type="string" required>
+  The URL to your profile on the platform.
+</ParamField>
+
+<ParamField path="label" type="string" required>
+  Display name for the platform (used for accessibility and tooltips).
+</ParamField>
+
+<ParamField path="icon" type="string" required>
+  Path to the platform icon relative to `/public`.
+</ParamField>
+
+## Updating About Section
+
+The About page consists of three main components:
+
+### Text Section
+
+Located in `src/components/About/TextSection.js` (or similar). This contains your bio and introduction.
+
+<CodeGroup>
+```jsx Before
+<p>
+  Hey, I'm Arsh, a web developer with a passion for programming...
+</p>
+```
+
+```jsx After
+<p>
+  Hi, I'm [Your Name], a [Your Title] passionate about [Your Interests]...
+</p>
+```
+</CodeGroup>
+
+### Skills Table
+
+Located in `src/components/About/SkillsTableSection.js`. Update your skills and technologies.
+
+### Timeline Section
+
+Located in `src/components/About/TimelineSection.js`. Update your education, work experience, and achievements.
+
+<Tip>
+  Look for component files in `src/components/About/` and update the text content directly.
+</Tip>
+
+## Updating Sitemap Configuration
+
+The sitemap is configured in `next-sitemap.config.js`:
+
+```js next-sitemap.config.js
+module.exports = {
+  siteUrl: 'https://www.yoursite.com', // Update this
+  generateRobotsTxt: true,
+  generateIndexSitemap: true,
+  exclude: ['/resume'], // Pages to exclude from sitemap
+};
+```
+
+<Steps>
+  <Step title="Update siteUrl">
+    Change the `siteUrl` to your actual domain.
+  </Step>
+
+  <Step title="Configure excluded pages">
+    Add any pages you don't want in search engines to the `exclude` array.
+  </Step>
+
+  <Step title="Generate sitemap">
+    The sitemap is automatically generated after each build:
+
+    ```bash
+    npm run build
+    ```
+
+    This creates `sitemap.xml` and `robots.txt` in the `/public` directory.
+  </Step>
+</Steps>
+
+## Updating Favicons and Icons
+
+Favicons are referenced in `src/app/layout.js` and stored in `/public`.
+
+<Steps>
+  <Step title="Prepare your favicon files">
+    You need:
+    - `favicon.png` - Standard favicon (32x32px or 64x64px)
+    - `favicon-apple.png` - Apple touch icon (180x180px)
+  </Step>
+
+  <Step title="Upload to /public">
+    Place your favicon files in the `/public` directory.
+  </Step>
+
+  <Step title="Update references">
+    Update the paths in `src/app/layout.js`:
+
+    ```js src/app/layout.js
+    export const metadata = {
+      icons: {
+        icon: '/your-favicon.png',
+        shortcut: '/your-favicon.png',
+        apple: '/your-favicon-apple.png',
+      },
+      // ...
+    };
+    ```
+  </Step>
+</Steps>
+
+<Tip>
+  Use [RealFaviconGenerator](https://realfavicongenerator.net/) to generate all required favicon formats from a single image.
+</Tip>
+
+## Updating URL Redirects
+
+The portfolio includes URL redirects in `vercel.json` for convenient short links:
+
+```json vercel.json
+{
+  "redirects": [
+    {
+      "source": "/linkedin",
+      "destination": "https://www.linkedin.com/in/yourprofile",
+      "permanent": true
+    },
+    {
+      "source": "/github",
+      "destination": "https://github.com/yourusername",
+      "permanent": true
+    }
+  ]
+}
+```
+
+### Adding Custom Redirects
+
+<Steps>
+  <Step title="Open vercel.json">
+    Navigate to `vercel.json` in your project root.
+  </Step>
+
+  <Step title="Add redirect entries">
+    Add new redirect objects to the array:
+
+    ```json vercel.json
+    {
+      "source": "/blog",
+      "destination": "https://yourblog.com",
+      "permanent": true
+    }
+    ```
+  </Step>
+
+  <Step title="Test locally">
+    Redirects work automatically when deployed to Vercel. For local testing, you may need to configure them separately.
+  </Step>
+</Steps>
+
+<Info>
+  These redirects allow you to use short URLs like `yoursite.com/linkedin` to redirect to your full LinkedIn URL.
+</Info>
+
+## Environment Variables
+
+If your portfolio uses API keys or other secrets:
+
+<Steps>
+  <Step title="Create .env.local file">
+    In your project root, create a `.env.local` file:
+
+    ```bash
+    touch .env.local
+    ```
+  </Step>
+
+  <Step title="Add your variables">
+    ```bash .env.local
+    NEXT_PUBLIC_API_KEY=your_api_key_here
+    NEXT_PUBLIC_ANALYTICS_ID=your_analytics_id
+    ```
+
+    Variables prefixed with `NEXT_PUBLIC_` are accessible in the browser.
+  </Step>
+
+  <Step title="Use in your code">
+    ```js
+    const apiKey = process.env.NEXT_PUBLIC_API_KEY;
+    ```
+  </Step>
+
+  <Step title="Add to Vercel">
+    In your Vercel project settings, add the same environment variables under Settings > Environment Variables.
+  </Step>
+</Steps>
+
+<Warning>
+  Never commit `.env.local` to Git. It's already in `.gitignore` by default.
+</Warning>
+
+## SEO Best Practices
+
+<AccordionGroup>
+  <Accordion title="Meta Descriptions">
+    Keep descriptions between 150-160 characters for optimal display in search results.
+  </Accordion>
+
+  <Accordion title="Open Graph Images">
+    - Recommended size: 1200x630px
+    - Format: PNG or JPG
+    - Keep file size under 300KB
+    - Include text/branding for social media previews
+  </Accordion>
+
+  <Accordion title="Title Tags">
+    - Keep under 60 characters
+    - Include your name and key information
+    - Make each page title unique
+  </Accordion>
+
+  <Accordion title="Structured Data">
+    The portfolio includes Schema.org Person markup. Update it with accurate information for better search engine understanding.
+  </Accordion>
+</AccordionGroup>
+
+## Testing Your Changes
+
+<Steps>
+  <Step title="Run development server">
+    ```bash
+    npm run dev
+    ```
+  </Step>
+
+  <Step title="Check all pages">
+    Navigate through your entire site to verify changes.
+  </Step>
+
+  <Step title="Test social sharing">
+    Use tools like:
+    - [Facebook Sharing Debugger](https://developers.facebook.com/tools/debug/)
+    - [Twitter Card Validator](https://cards-dev.twitter.com/validator)
+    - [LinkedIn Post Inspector](https://www.linkedin.com/post-inspector/)
+  </Step>
+
+  <Step title="Validate metadata">
+    Use [Metatags.io](https://metatags.io/) to preview how your site appears on social media.
+  </Step>
+</Steps>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Customize Theme" icon="palette" href="/guides/customizing-theme">
+    Change colors and visual appearance
+  </Card>
+  <Card title="Deploy Your Site" icon="rocket" href="/guides/deployment">
+    Deploy your portfolio to production
+  </Card>
+</CardGroup>

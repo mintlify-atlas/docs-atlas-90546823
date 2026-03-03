@@ -1,0 +1,425 @@
+---
+title: 'Routing & Navigation'
+description: 'Understanding the Next.js App Router setup, routes, and navigation in the Arsh Saxena Portfolio'
+---
+
+The project uses **Next.js 15 App Router** with file-based routing. Every folder in `src/app/` with a `page.js` file automatically becomes a route.
+
+## Route Structure
+
+Here's the complete routing structure:
+
+```
+src/app/
+├── layout.js                 # Root layout (wraps all pages)
+├── page.js                   # Home page (/)
+├── not-found.js              # 404 page
+├── about/
+│   └── page.js               # About page (/about)
+├── connect/
+│   └── page.js               # Contact page (/connect)
+├── made-by-arsh/
+│   ├── page.js               # Portfolio listing (/made-by-arsh)
+│   ├── templates/
+│   │   └── [slug]/
+│   │       ├── page.js       # Template detail (/made-by-arsh/templates/[slug])
+│   │       └── TemplateContent.js
+│   └── web-projects/
+│       └── [slug]/
+│           └── page.js       # Web project detail (/made-by-arsh/web-projects/[slug])
+└── resume/
+    └── page.js               # Resume page (/resume)
+```
+
+## Route Overview
+
+<CardGroup cols={2}>
+  <Card title="Static Routes" icon="link">
+    `/`, `/about`, `/connect`, `/resume`, `/made-by-arsh`
+  </Card>
+  <Card title="Dynamic Routes" icon="route">
+    `/made-by-arsh/templates/[slug]`, `/made-by-arsh/web-projects/[slug]`
+  </Card>
+</CardGroup>
+
+## Static Routes
+
+These routes use a fixed URL path and are defined by a `page.js` file in a named folder.
+
+<AccordionGroup>
+  <Accordion title="/ - Home Page">
+    **File:** `src/app/page.js`
+    
+    The landing page featuring:
+    - Animated image carousel
+    - Social media links
+    - Featured projects section
+    
+    ```javascript src/app/page.js:1-32
+    // app/page.js
+    
+    import AnimatedImgs from '@/components/Home/AnimatesImgsSection';
+    import SocialsSection from '@/components/Home/SocialsSection';
+    import MadeByArshSection from '@/components/Home/MadeByArshSection';
+    
+    export const metadata = {
+      title: 'Arsh Saxena',
+      description: 'Hey, I\'m Arsh, a web developer with a passion for programming...',
+      authors: [{ name: 'Arsh Saxena', url: 'https://www.arshsaxena.in' }],
+      creator: 'Arsh Saxena',
+    };
+    
+    export default function Home() {
+      return (
+        <>
+          <div className="m-auto max-w-[980px]">
+            <section className="...">
+              <AnimatedImgs />
+            </section>
+            <section className="...">
+              <SocialsSection />
+            </section>
+            <section className="...">
+              <MadeByArshSection />
+            </section>
+          </div>
+        </>
+      );
+    }
+    ```
+    
+    <Note>
+      Each page exports `metadata` for SEO. This is a Next.js App Router feature for defining page metadata.
+    </Note>
+  </Accordion>
+
+  <Accordion title="/about - About Page">
+    **File:** `src/app/about/page.js`
+    
+    Personal information, skills, and timeline:
+    - Text section with bio
+    - Skills table with 24+ technologies
+    - Education and work timeline
+    
+    The page imports components from `src/components/About/`:
+    ```javascript
+    import TextSection from '@/components/About/TextSection';
+    import SkillsTableSection from '@/components/About/SkillsTableSection';
+    import TimelineSection from '@/components/About/TimelineSection';
+    ```
+  </Accordion>
+
+  <Accordion title="/connect - Contact Page">
+    **File:** `src/app/connect/page.js`
+    
+    Contact form for getting in touch. Uses form components:
+    ```javascript
+    import Form from '@/components/Connect/Form';
+    ```
+    
+    The form components are split into:
+    - `Form.jsx` - Main form logic
+    - `FormInputs.jsx` - Input fields
+    - `FormLabels.jsx` - Label components
+  </Accordion>
+
+  <Accordion title="/made-by-arsh - Portfolio Listing">
+    **File:** `src/app/made-by-arsh/page.js`
+    
+    Portfolio showcase page displaying:
+    - Web projects (full applications)
+    - Web mini-projects (interactive games)
+    - Web templates (downloadable components)
+    - Python projects (Pygame applications)
+    
+    Each section is a separate component from `src/components/MadeByArsh/`.
+  </Accordion>
+
+  <Accordion title="/resume - Resume Page">
+    **File:** `src/app/resume/page.js`
+    
+    Displays the resume/CV with professional experience, education, and skills.
+    
+    ```javascript
+    import Content from '@/components/Resume/Content';
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Dynamic Routes
+
+Dynamic routes use **bracket notation** `[slug]` to create parameterized URLs.
+
+<AccordionGroup>
+  <Accordion title="/made-by-arsh/templates/[slug] - Template Details">
+    **File:** `src/app/made-by-arsh/templates/[slug]/page.js`
+    
+    Displays individual template details. The `[slug]` parameter matches the template name.
+    
+    ```javascript src/app/made-by-arsh/templates/[slug]/page.js:1-21
+    // app/made-by-arsh/templates/[slug]/page.js
+    
+    import { templateData } from '@/data/webTemplatesBase';
+    import TemplateContent from './TemplateContent';
+    import { notFound } from 'next/navigation';
+    
+    export function generateMetadata({ params }) {
+      const template = templateData.find((t) => t.slug === params.slug);
+      return {
+        title: `${template.name} | Made by Arsh | Arsh Saxena`,
+        description: `${template.name} template made by Arsh. ${template.desc}`,
+      };
+    }
+    
+    export default function TemplatePage({ params }) {
+      const template = templateData.find((t) => t.slug === params.slug);
+      if (!template) return notFound();
+      
+      return <TemplateContent template={template} />;
+    }
+    ```
+    
+    **Example URLs:**
+    - `/made-by-arsh/templates/apple-style-navigation-bar`
+    - `/made-by-arsh/templates/modern-footer`
+    - `/made-by-arsh/templates/simple-old-school`
+    
+    <Tip>
+      The `generateMetadata()` function creates dynamic SEO metadata based on the route parameters.
+    </Tip>
+  </Accordion>
+
+  <Accordion title="/made-by-arsh/web-projects/[slug] - Web Project Details">
+    **File:** `src/app/made-by-arsh/web-projects/[slug]/page.js`
+    
+    Similar structure to templates, but for interactive mini-games:
+    
+    **Example URLs:**
+    - `/made-by-arsh/web-projects/ping-pong`
+    - `/made-by-arsh/web-projects/snake`
+    - `/made-by-arsh/web-projects/tic-tac-toe`
+    - `/made-by-arsh/web-projects/rock-paper-scissors`
+    - `/made-by-arsh/web-projects/stopwatch`
+    
+    These pages embed the actual HTML/CSS/JS games from `public/made-by-arsh/web-projects/`.
+  </Accordion>
+</AccordionGroup>
+
+## Root Layout
+
+The **root layout** wraps all pages and provides shared UI elements.
+
+**File:** `src/app/layout.js`
+
+```javascript src/app/layout.js:60-118
+export default function RootLayout({ children }) {
+  return (
+    <html
+      lang="en"
+      className={`${GeistSans.className} ${GeistMono.variable}`}
+      suppressHydrationWarning
+    >
+      <head>
+        <meta name="robots" content="index, follow" />
+        {/* Analytics scripts */}
+      </head>
+      <body className="overflow-x-hidden font-sans antialiased">
+        <AnimatedBackground />
+        <div className="container m-auto max-w-[980px]">
+          <SetMetaThemeColor />
+          <Navbar />
+          {children}
+          <SpeedInsights />
+          <Analytics />
+          <Footer />
+        </div>
+      </body>
+    </html>
+  );
+}
+```
+
+**Layout Features:**
+
+<CardGroup cols={2}>
+  <Card title="Geist Font" icon="font">
+    Loads Geist Sans and Geist Mono fonts with automatic subsetting
+  </Card>
+  <Card title="Analytics" icon="chart-line">
+    Vercel Analytics and Speed Insights for performance monitoring
+  </Card>
+  <Card title="Theme Support" icon="moon">
+    SetMetaThemeColor updates browser chrome based on theme
+  </Card>
+  <Card title="Animated Background" icon="wand-magic-sparkles">
+    Gradient animation canvas behind all content
+  </Card>
+</CardGroup>
+
+### Global Metadata
+
+```javascript src/app/layout.js:16-58
+export const metadata = {
+  icons: {
+    icon: '/arsh-favicon.png',
+    shortcut: '/arsh-favicon.png',
+    apple: '/arsh-favicon-apple.png',
+  },
+  alternates: {
+    canonical: '/',
+    types: {
+      'application/xml': [
+        {
+          url: '/sitemap.xml',
+          title: 'Sitemap',
+        },
+      ],
+    },
+  },
+  openGraph: {
+    title: 'Arsh Saxena',
+    description: 'Hey, I\'m Arsh, a web developer...',
+    url: 'https://www.arshsaxena.in',
+    siteName: 'Arsh Saxena',
+    images: [{
+      url: 'https://www.arshsaxena.in/screenshot.png',
+      width: 1200,
+      height: 630,
+    }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    creator: '@arshsaxena02',
+  },
+};
+```
+
+<Note>
+  Root layout metadata is merged with page-specific metadata. Pages can override the title and description.
+</Note>
+
+## 404 Not Found Page
+
+**File:** `src/app/not-found.js`
+
+Custom 404 page for invalid routes. This is automatically shown when:
+- User navigates to a non-existent route
+- A dynamic route calls `notFound()` (e.g., invalid slug)
+
+```javascript
+import { notFound } from 'next/navigation';
+
+if (!template) return notFound();
+```
+
+## Navigation Component
+
+The navbar provides links to all main routes.
+
+**File:** `src/components/Layout/Navbar/Navbar.js` and `NavbarLinks.js`
+
+```javascript
+// NavbarLinks.js structure (conceptual)
+const links = [
+  { href: '/', label: 'Home' },
+  { href: '/about', label: 'About' },
+  { href: '/made-by-arsh', label: 'Made by Arsh' },
+  { href: '/resume', label: 'Resume' },
+  { href: '/connect', label: 'Connect' },
+];
+```
+
+<Tip>
+  Next.js `<Link>` components provide client-side navigation without full page reloads, making navigation instant.
+</Tip>
+
+## Routing Patterns
+
+### Getting Route Parameters
+
+```javascript
+export default function Page({ params }) {
+  // params.slug contains the dynamic segment
+  const item = data.find(d => d.slug === params.slug);
+  return <div>{item.name}</div>;
+}
+```
+
+### Programmatic Navigation
+
+```javascript
+import { useRouter } from 'next/navigation';
+
+function Component() {
+  const router = useRouter();
+  
+  const handleClick = () => {
+    router.push('/about');
+  };
+}
+```
+
+### Link Component
+
+```javascript
+import Link from 'next/link';
+
+<Link href="/about">About Me</Link>
+<Link href={`/made-by-arsh/templates/${slug}`}>View Template</Link>
+```
+
+## Sitemap Generation
+
+The project uses `next-sitemap` to automatically generate sitemaps:
+
+**Config:** `next-sitemap.config.js`
+
+```javascript
+module.exports = {
+  siteUrl: 'https://www.arshsaxena.in',
+  generateRobotsTxt: true,
+  // Additional configuration
+};
+```
+
+Sitemaps are generated during the build process:
+
+```json package.json:8
+"postbuild": "next-sitemap"
+```
+
+Generated files:
+- `public/sitemap.xml` - Main sitemap
+- `public/sitemap-0.xml` - Sitemap chunk
+- `public/robots.txt` - Robots configuration
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="File Colocation" icon="folder-tree">
+    Keep route-specific components in the same folder as the page (e.g., TemplateContent.js next to page.js)
+  </Card>
+  <Card title="Metadata Export" icon="file-code">
+    Always export metadata from pages for proper SEO and social sharing
+  </Card>
+  <Card title="Not Found Handling" icon="circle-exclamation">
+    Use notFound() for invalid dynamic routes instead of showing error states
+  </Card>
+  <Card title="Server Components" icon="server">
+    Keep pages as server components by default for optimal performance
+  </Card>
+</CardGroup>
+
+## Related Documentation
+
+<CardGroup cols={3}>
+  <Card title="Components" icon="puzzle-piece" href="/structure/components">
+    Learn about the component architecture
+  </Card>
+  <Card title="Modifying Content" icon="pen-to-square" href="/guides/modifying-content">
+    Working with templateData and webProjectsData
+  </Card>
+  <Card title="Deployment" icon="rocket" href="/guides/deployment">
+    Deploy and optimize your portfolio
+  </Card>
+</CardGroup>

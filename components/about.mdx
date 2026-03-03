@@ -1,0 +1,507 @@
+---
+title: About Page Components
+description: Personal introduction, skills showcase, and timeline components for the about page
+---
+
+The about page components provide a comprehensive view of Arsh's background, technical skills, and educational/professional journey.
+
+## TextSection
+
+Personal introduction section with social links and emoji icons.
+
+**Location:** `src/components/About/TextSection.jsx`
+
+### Features
+
+- Multi-paragraph bio text
+- Visual interest emoji icons
+- Internal navigation links
+- Social media integration
+- Responsive layout
+
+### Implementation
+
+```jsx TextSection.jsx
+import React from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { socialLinksBase } from '@/data/socialLinksBase';
+
+export default function TextSection() {
+  return (
+    <div className="space-y-5">
+      <div>Hey.</div>
+      <div>
+        I'm Arsh Saxena, a developer currently pursuing a B.Tech. in
+        Electronics and Communication Engineering. I have a strong
+        interest in programming and web development, and I'm
+        proficient in C/C++ and Python. I love exploring new
+        technologies and constantly improving my skills.
+      </div>
+      <div>
+        Beyond coding, I'm into photography, video editing, and
+        photo editing. I also enjoy writing engaging content,
+        especially in English composition. In my free time, I watch
+        movies and TV shows, and I collect sneakers as a hobby.
+      </div>
+      
+      {/* Emoji icons */}
+      <div className="flex w-fit flex-wrap justify-start gap-2">
+        {[
+          { alt: 'books', icon: '/emojis/books.webp' },
+          { alt: 'boy-using-laptop', icon: '/emojis/boy-using-laptop.webp' },
+          { alt: 'camera', icon: '/emojis/camera.webp' },
+          { alt: 'laptop', icon: '/emojis/laptop.webp' },
+          { alt: 'movie-camera', icon: '/emojis/movie-camera.webp' },
+          { alt: 'pen', icon: '/emojis/writing.webp' },
+          { alt: 'shoes', icon: '/emojis/shoes.webp' },
+        ].map((item, i) => (
+          <Image key={i} src={item.icon} width={21} height={21} alt={item.alt} />
+        ))}
+      </div>
+      
+      {/* Call to action links */}
+      <div>
+        Take a look at my work on{' '}
+        <Link href="/made-by-arsh" className="text-[var(--accent)] hover:underline">
+          Made by Arsh
+        </Link>.
+      </div>
+      
+      <div>
+        Let's{' '}
+        <Link href="/connect" className="text-[var(--accent)] hover:underline">
+          connect
+        </Link>, ping me anywhere.
+      </div>
+      
+      {/* Social links */}
+      <div className="flex flex-wrap items-center gap-4">
+        {[
+          socialLinksBase.linkedin,
+          socialLinksBase.github,
+          socialLinksBase.instagram,
+          socialLinksBase.x,
+        ].map((item, i) => (
+          <Link key={i} href={item.href}>
+            <Image
+              src={item.icon}
+              width={40}
+              height={40}
+              alt={item.label}
+              className="rounded-[9px]"
+            />
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+}
+```
+
+### Content Structure
+
+<Steps>
+  <Step title="Introduction">
+    Brief greeting followed by educational background and technical interests
+  </Step>
+  
+  <Step title="Interests">
+    Personal hobbies including photography, video editing, writing, and sneaker collecting
+  </Step>
+  
+  <Step title="Visual Interests">
+    7 emoji icons representing different interests (books, laptop, camera, etc.)
+  </Step>
+  
+  <Step title="Call to Actions">
+    Links to "Made by Arsh" projects and "Connect" page
+  </Step>
+  
+  <Step title="Social Connections">
+    40x40px social media icon links (LinkedIn, GitHub, Instagram, X)
+  </Step>
+</Steps>
+
+## SkillsTableSection
+
+Interactive skills grid with hover effects and responsive layout.
+
+**Location:** `src/components/About/SkillsTableSection.jsx`
+
+### Features
+
+- Dynamic grid layout (2/4/6 columns based on viewport)
+- SVG icon imports for each skill
+- Custom hover colors per technology
+- Responsive column calculation
+- Brand-accurate color schemes
+
+### Skills Data Structure
+
+```javascript Skills Array
+const skills = [
+  {
+    label: 'C++',
+    icon: CppIcon,
+    css: 'hover:bg-[#00599c] hover:text-[#f5f5f7]',
+  },
+  {
+    label: 'Python',
+    icon: PythonIcon,
+    css: 'hover:bg-[#3670a0] hover:text-[#f5f5f7]',
+  },
+  {
+    label: 'Next.js',
+    icon: NextjsIcon,
+    css: 'hover:bg-[#000000] hover:text-[#f5f5f7]',
+  },
+  {
+    label: 'Tailwind CSS',
+    icon: TailwindcssIcon,
+    css: 'hover:bg-[#38b2ac] hover:text-[#f5f5f7]',
+  },
+  // ... 20 more skills
+];
+```
+
+### Complete Skills List
+
+<Tabs>
+  <Tab title="Languages">
+    - C++
+    - Python
+    - JavaScript
+    - Java
+    - PHP
+    - R
+    - MATLAB
+  </Tab>
+  
+  <Tab title="Frameworks & Libraries">
+    - Next.js
+    - React
+    - Tailwind CSS
+    - Bootstrap
+    - Flask
+    - Node.js
+    - jQuery
+    - Pygame
+  </Tab>
+  
+  <Tab title="Platforms & Tools">
+    - Vercel
+    - Cloudflare
+    - Netlify
+    - GitHub Pages
+    - MySQL
+    - Git
+  </Tab>
+  
+  <Tab title="Markup & Styling">
+    - HTML
+    - CSS
+    - Markdown
+  </Tab>
+</Tabs>
+
+### Responsive Column Logic
+
+<CodeGroup>
+
+```javascript Dynamic Columns
+function chunkArray(array, size) {
+  if (!Array.isArray(array)) return [];
+  const result = [];
+  for (let i = 0; i < array.length; i += size) {
+    result.push(array.slice(i, i + size));
+  }
+  return result;
+}
+
+const [chunkedSkills, setChunkedSkills] = useState([]);
+
+useEffect(() => {
+  const updateCols = () => {
+    const width = window.innerWidth;
+    const cols = width >= 1024 ? 6 : width >= 768 ? 4 : 2;
+    setChunkedSkills(chunkArray(skills, cols));
+  };
+
+  updateCols();
+  window.addEventListener('resize', updateCols);
+  return () => window.removeEventListener('resize', updateCols);
+}, []);
+```
+
+</CodeGroup>
+
+### Breakpoints
+
+<ResponseField name="Mobile" type="< 768px">
+  2 columns per row
+</ResponseField>
+
+<ResponseField name="Tablet" type="768px - 1023px">
+  4 columns per row
+</ResponseField>
+
+<ResponseField name="Desktop" type="≥ 1024px">
+  6 columns per row
+</ResponseField>
+
+### Render Implementation
+
+```jsx Table Rendering
+return (
+  <div className="mr-[1px]">
+    <table className="w-full table-fixed border-collapse border-[1px] border-[var(--border-default)] text-center">
+      <tbody>
+        {chunkedSkills.map((row, rowIndex) => (
+          <tr key={rowIndex}>
+            {row.map((skill, cellIndex) => (
+              <td
+                key={cellIndex}
+                className={`border-[1px] border-[var(--border-default)] p-2 py-5 transition-all duration-300 ${skill.css} cursor-pointer`}
+              >
+                <div className="flex items-center justify-center text-[15px]">
+                  <skill.icon className="mr-2 h-6 w-6" />
+                  <div className="font-medium">{skill.label}</div>
+                </div>
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+);
+```
+
+## TimelineSection
+
+Scrolling timeline with animated progress indicator.
+
+**Location:** `src/components/About/TimelineSection.jsx`
+
+### Features
+
+- Framer Motion scroll animations
+- Dynamic progress line that fills as you scroll
+- Location badges with pin emoji
+- Multiple images per timeline item
+- Responsive grid layouts for images
+- HTML content support via `dangerouslySetInnerHTML`
+
+### Timeline Data Structure
+
+<CodeGroup>
+
+```javascript Timeline Entry
+const data = [
+  {
+    title: 'Jul 2025',
+    preTextContent: 'Bengaluru, India',
+    textContent:
+      'Engaged as a <strong>PRISM Developer</strong> at <strong>Samsung R&D Institute India</strong> under the <strong>PRISM program</strong>, contributing to an AI/ML-focused research project.',
+    textContentCss: '',
+    imgContent: ['/about/timeline/samsungresearch.webp'],
+    imgWrapperCss: 'grid grid-cols-1 md:grid-cols-2 gap-4',
+    imgContentCss: 'h-1/2 md:h-full',
+    css: '',
+  },
+  // ... more entries
+];
+```
+
+</CodeGroup>
+
+### Timeline Events
+
+<Steps>
+  <Step title="Jul 2025 - Samsung R&D">
+    PRISM Developer at Samsung R&D Institute India, Bengaluru
+    - AI/ML research project
+  </Step>
+  
+  <Step title="Sep 2023 - CYSCOM">
+    Web Developer at CYSCOM Student Chapter, VIT Chennai
+  </Step>
+  
+  <Step title="Aug 2023 - VIT Chennai">
+    Started B.Tech. in Electronics and Communication Engineering
+    - 2 campus images
+  </Step>
+  
+  <Step title="May 2023 - Central Academy">
+    Completed CBSE Class XII from Central Academy, Lucknow
+    - PCM, Computer Science, English
+  </Step>
+</Steps>
+
+### Scroll Animation Implementation
+
+<AccordionGroup>
+  <Accordion title="Scroll Progress Tracking">
+    ```javascript
+    const ref = useRef(null);
+    const containerRef = useRef(null);
+    const [height, setHeight] = useState(0);
+
+    const { scrollYProgress } = useScroll({
+      target: containerRef,
+      offset: ['start 10%', 'end 50%'],
+    });
+
+    const heightTransform = useTransform(scrollYProgress, [0, 1], [0, height]);
+    const opacityTransform = useTransform(scrollYProgress, [0, 0.1], [0, 1]);
+    ```
+    
+    The scroll progress is tracked from when the container enters the viewport (start 10%) until it's halfway out (end 50%).
+  </Accordion>
+
+  <Accordion title="Animated Progress Line">
+    ```jsx
+    <motion.div
+      style={{
+        height: heightTransform,
+        opacity: opacityTransform,
+      }}
+      className="absolute inset-x-0 top-0 w-[2px] rounded-full bg-gradient-to-t from-[var(--accent)] from-[0%] via-[var(--main)] via-[10%] to-transparent"
+    />
+    ```
+    
+    The line fills from bottom to top as you scroll, using a gradient from accent color to transparent.
+  </Accordion>
+</AccordionGroup>
+
+### Timeline Item Structure
+
+```jsx Timeline Item
+<div className={`flex justify-start md:gap-10 ${item.css}`}>
+  {/* Dot indicator - sticky positioned */}
+  <div className="sticky top-40 z-40 flex max-w-xs flex-col items-center self-start md:w-full md:flex-row">
+    <div className="absolute left-0 flex h-10 w-10 items-center justify-center rounded-full bg-[#dadada] dark:bg-[#131313]">
+      <div className="h-4 w-4 rounded-full border border-[var(--main)] bg-[var(--accent)] p-2" />
+    </div>
+    <h3 className="hidden text-xl font-bold md:block md:pl-20 md:text-5xl">
+      {item.title}
+    </h3>
+  </div>
+
+  {/* Content */}
+  <div className="relative w-full pl-20 md:pl-0">
+    <div className="mb-4 block text-left text-2xl font-bold md:hidden">
+      {item.title}
+    </div>
+    
+    {/* Location badge */}
+    {item.preTextContent && (
+      <div className="mb-3 flex w-fit items-center rounded-full bg-[var(--main)] px-2 py-1 pr-3 text-xs text-[#f5f5f7]">
+        <Image src="/emojis/pin.webp" width={15} height={15} alt="pin" className="mr-1" />
+        {item.preTextContent}
+      </div>
+    )}
+    
+    {/* Description */}
+    {item.textContent && (
+      <div
+        className="mb-5 text-[14px] leading-[24px] md:text-[16px]"
+        dangerouslySetInnerHTML={{ __html: item.textContent }}
+      />
+    )}
+    
+    {/* Images */}
+    {item.imgContent && (
+      <div className={item.imgWrapperCss}>
+        {item.imgContent.map((src, i) => (
+          <Image
+            key={i}
+            src={src}
+            alt={`Timeline image ${i + 1}`}
+            width={0}
+            height={0}
+            className={`w-full rounded-[10px] border-[1px] border-[var(--border-default)] object-cover ${item.imgContentCss}`}
+          />
+        ))}
+      </div>
+    )}
+  </div>
+</div>
+```
+
+### Layout Variations
+
+Each timeline item can have custom image layouts:
+
+<Tabs>
+  <Tab title="Single Image">
+    ```javascript
+    imgWrapperCss: 'grid grid-cols-1 md:grid-cols-2 gap-4',
+    imgContentCss: 'h-1/2 md:h-full'
+    ```
+  </Tab>
+  
+  <Tab title="Two Images">
+    ```javascript
+    imgWrapperCss: 'grid grid-cols-2 md:grid-cols-2 gap-2',
+    imgContentCss: 'h-40 md:h-80'
+    ```
+  </Tab>
+</Tabs>
+
+## About Page Layout
+
+Typical structure combining all three components:
+
+```jsx pages/about.js
+import TextSection from '@/components/About/TextSection';
+import SkillsTableSection from '@/components/About/SkillsTableSection';
+import TimelineSection from '@/components/About/TimelineSection';
+
+export default function About() {
+  return (
+    <main className="mx-auto max-w-4xl px-5 py-10">
+      <section className="mb-16">
+        <h1 className="mb-8 text-4xl font-bold">About</h1>
+        <TextSection />
+      </section>
+      
+      <section className="mb-16">
+        <h2 className="mb-8 text-3xl font-bold">Skills</h2>
+        <SkillsTableSection />
+      </section>
+      
+      <section>
+        <h2 className="mb-8 text-3xl font-bold">Timeline</h2>
+        <TimelineSection />
+      </section>
+    </main>
+  );
+}
+```
+
+## Customization Tips
+
+<CardGroup cols={2}>
+  <Card title="Adding Skills" icon="plus">
+    Import the SVG icon and add to the `skills` array with custom hover colors matching the brand
+  </Card>
+  
+  <Card title="Timeline Entries" icon="clock">
+    Add new items to the `data` array with flexible image layouts and custom spacing via `css` property
+  </Card>
+  
+  <Card title="Social Links" icon="share-nodes">
+    Update `socialLinksBase.js` to add/remove social platforms throughout the site
+  </Card>
+  
+  <Card title="Emoji Icons" icon="face-smile">
+    Replace WebP emoji files in `/public/emojis/` to update visual representations
+  </Card>
+</CardGroup>
+
+## Related Components
+
+- [Layout Components](/components/layout) - Page structure
+- [Home Components](/components/home) - Landing page sections

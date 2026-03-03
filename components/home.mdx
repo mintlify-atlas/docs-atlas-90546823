@@ -1,0 +1,416 @@
+---
+title: Home Page Components
+description: Hero section, image carousel, social links, and project showcase components for the landing page
+---
+
+The home page components create an engaging, animated landing experience with personal introduction, project showcase, and social connectivity.
+
+## AnimatedImgsSection
+
+The hero section featuring an animated image carousel with profile information.
+
+**Location:** `src/components/Home/AnimatesImgsSection.jsx`
+
+### Features
+
+- Framer Motion-powered image carousel
+- 7 rotating personal images
+- Random rotation angles for natural stacking effect
+- Typed name animation
+- Dynamic age calculation
+- Navigation controls (prev/next)
+- Optional autoplay mode
+
+### Props
+
+<ParamField path="autoplay" type="boolean" default="false">
+  Enable automatic image rotation every 5 seconds
+</ParamField>
+
+### Implementation
+
+<CodeGroup>
+
+```jsx AnimatedImgsSection.jsx
+'use client';
+
+import { useEffect, useState, useCallback, memo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
+import Link from 'next/link';
+import { ChevronLeft, ChevronRight, ArrowUpRight } from 'lucide-react';
+import TypedWords from '@/components/Home/Typed';
+
+const AnimatedImgsSection = ({ autoplay = false }) => {
+  const imgs = [
+    { src: '/images/img1.webp' },
+    { src: '/images/img2.webp' },
+    { src: '/images/img3.webp' },
+    { src: '/images/img4.webp' },
+    { src: '/images/img5.webp' },
+    { src: '/images/img6.webp' },
+    { src: '/images/img7.webp' },
+  ];
+
+  const [active, setActive] = useState(0);
+  const [rotations, setRotations] = useState([]);
+
+  const handleNext = useCallback(() => {
+    setActive((prev) => (prev + 1) % imgs.length);
+  }, [imgs.length]);
+
+  const handlePrev = useCallback(() => {
+    setActive((prev) => (prev - 1 + imgs.length) % imgs.length);
+  }, [imgs.length]);
+
+  useEffect(() => {
+    const generated = imgs.map(() => Math.floor(Math.random() * 21) - 10);
+    setRotations(generated);
+  }, [imgs.length]);
+
+  useEffect(() => {
+    if (autoplay) {
+      const interval = setInterval(handleNext, 5000);
+      return () => clearInterval(interval);
+    }
+  }, [autoplay]);
+
+  // ... rendering logic
+};
+```
+
+</CodeGroup>
+
+### Animation Details
+
+<AccordionGroup>
+  <Accordion title="Image Stack Animation">
+    ```javascript
+    animate={{
+      opacity: isActive(index) ? 1 : 0.7,
+      scale: isActive(index) ? 1 : 0.95,
+      z: isActive(index) ? 0 : -100,
+      rotate: isActive(index) ? 0 : rotations[index],
+      zIndex: isActive(index) ? 40 : imgs.length + 2 - index,
+      y: isActive(index) ? [0, -80, 0] : 0,
+    }}
+    transition={{
+      duration: 0.5,
+      ease: 'easeInOut',
+    }}
+    ```
+    
+    Each image animates with:
+    - Random rotation (-10° to +10°) when inactive
+    - Scale reduction (0.95) for depth effect
+    - Bounce animation (y: [0, -80, 0]) when active
+    - Z-axis positioning for 3D stacking
+  </Accordion>
+
+  <Accordion title="Profile Text Component">
+    The `ProfileText` component displays:
+    - Typed name animation using Typed.js
+    - Dynamic age calculation from birth year (2005)
+    - India flag emoji with location
+    - Personal description
+    - Interest icons (books, laptop, camera, etc.)
+    - Navigation buttons (desktop only)
+    - Resume link button
+  </Accordion>
+</AccordionGroup>
+
+### Usage Example
+
+<Tabs>
+  <Tab title="Default">
+    ```jsx
+    import AnimatedImgsSection from '@/components/Home/AnimatesImgsSection';
+
+    export default function Home() {
+      return <AnimatedImgsSection />;
+    }
+    ```
+  </Tab>
+  
+  <Tab title="With Autoplay">
+    ```jsx
+    <AnimatedImgsSection autoplay={true} />
+    ```
+  </Tab>
+</Tabs>
+
+## TypedWords
+
+Animated typing effect using Typed.js library.
+
+**Location:** `src/components/Home/Typed.js`
+
+### Props
+
+<ParamField path="strings" type="string[]" default="['Default Text']">
+  Array of strings to type out in sequence
+</ParamField>
+
+### Implementation
+
+```javascript Typed.js
+'use client';
+
+import { useEffect, useRef, useState } from 'react';
+import Typed from 'typed.js';
+
+export default function TypedName({ strings = ['Default Text'] }) {
+  const el = useRef(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+
+    const typed = new Typed(el.current, {
+      strings,
+      typeSpeed: 50,
+      showCursor: false,
+    });
+
+    return () => typed.destroy();
+  }, [strings, mounted]);
+
+  if (!mounted) return null;
+
+  return <span ref={el}></span>;
+}
+```
+
+### Configuration
+
+<ResponseField name="typeSpeed" type="number" default="50">
+  Typing speed in milliseconds per character
+</ResponseField>
+
+<ResponseField name="showCursor" type="boolean" default="false">
+  Whether to show the blinking cursor (disabled for cleaner look)
+</ResponseField>
+
+<Note>
+  The component uses `mounted` state to prevent hydration mismatches between server and client rendering.
+</Note>
+
+## SocialsSection
+
+Social media links section with icon display.
+
+**Location:** `src/components/Home/SocialsSection.jsx`
+
+### Implementation
+
+```jsx SocialsSection.jsx
+import Image from 'next/image';
+import Link from 'next/link';
+import { socialLinksBase } from '@/data/socialLinksBase';
+
+export default function SocialsSection() {
+  return (
+    <div className="mx-auto flex max-w-sm flex-col justify-between md:max-w-4xl md:flex-row">
+      <div className="text-md flex items-center font-normal md:text-xl">
+        Ping me anywhere!
+      </div>
+      <div className="mt-5 flex flex-wrap items-center gap-4 md:mt-0">
+        {[
+          socialLinksBase.linkedin,
+          socialLinksBase.github,
+          socialLinksBase.instagram,
+          socialLinksBase.x,
+        ].map((item, i) => (
+          <Link key={i} href={item.href} target="_blank">
+            <Image
+              src={item.icon}
+              width={40}
+              height={40}
+              alt={item.label}
+              className="rounded-[9px]"
+            />
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+}
+```
+
+### Social Links Data Structure
+
+```javascript socialLinksBase.js
+export const socialLinksBase = {
+  linkedin: {
+    href: 'https://linkedin.com/in/arshsaxena',
+    label: 'LinkedIn',
+    icon: '/social/linkedin.webp',
+  },
+  github: {
+    href: 'https://github.com/arshsaxena',
+    label: 'GitHub',
+    icon: '/social/github.webp',
+  },
+  instagram: {
+    href: 'https://instagram.com/arsh.saxena02',
+    label: 'Instagram',
+    icon: '/social/instagram.webp',
+  },
+  x: {
+    href: 'https://x.com/arshsaxena02',
+    label: 'X',
+    icon: '/social/x.webp',
+  },
+};
+```
+
+## MadeByArshSection
+
+Project showcase section featuring web projects with icons and descriptions.
+
+**Location:** `src/components/Home/MadeByArshSection.jsx`
+
+### Features
+
+- Project cards with icons and taglines
+- External links with "Check Out" buttons
+- Responsive layout
+- Data-driven from `webProjectsBase`
+
+### Implementation
+
+```jsx MadeByArshSection.jsx
+import Image from 'next/image';
+import Link from 'next/link';
+import { webProjectsBase } from '@/data/webProjectsBase';
+import { ChevronRight, ArrowUpRight } from 'lucide-react';
+
+const iconMap = { ChevronRight, ArrowUpRight };
+
+export default function MadeByArshSection() {
+  const items = [
+    {
+      ...webProjectsBase.nptelcompanion,
+      buttonLabel: 'Check Out',
+      buttonIcon: 'ArrowUpRight',
+      containerCss: 'pb-5 border-b-[1px] border-b-[var(--border-default)]',
+    },
+    // ... more items
+  ];
+
+  return (
+    <div className="mx-auto flex flex-col justify-between">
+      {items.map((item, i) => {
+        const ButtonIcon = iconMap[item.buttonIcon];
+        
+        return (
+          <div key={i} className={`flex flex-row justify-between md:items-end ${item.containerCss}`}>
+            <Image
+              src={item.icon}
+              width={0}
+              height={0}
+              alt={item.label}
+              className="h-[70px] w-[70px] rounded-[15px] border-[1px] border-[var(--border-default)] bg-[#f5f5f7] md:h-[80px] md:w-[80px]"
+            />
+            <div className="w-full">
+              <div className="ml-3 md:ml-5">
+                <div className="text-[17px] font-bold md:text-[23px]">{item.label}</div>
+                <div className="text-sm">{item.tagLine}</div>
+              </div>
+              <div className="mt-5 flex w-full justify-end sm:mt-0">
+                <Link
+                  href={item.href}
+                  target="_blank"
+                  className="flex items-center rounded-full border-[1px] border-[var(--accent)] bg-[var(--main)] px-3 text-center text-[#f5f5f7] hover:bg-[var(--accent)]"
+                >
+                  <span className="text-sm md:text-[15px]">{item.buttonLabel}</span>
+                  {ButtonIcon && <ButtonIcon className="ml-1 w-[15px]" />}
+                </Link>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+```
+
+### Project Data Structure
+
+<CodeGroup>
+
+```javascript webProjectsBase Example
+export const webProjectsBase = {
+  nptelcompanion: {
+    label: 'NPTEL Companion',
+    tagLine: 'Free, exam-ready NPTEL practice.',
+    desc1: 'Free, exam-ready NPTEL practice.',
+    desc2: 'Prepare with weekly and full-length quizzes from real NPTEL courses.',
+    href: 'https://nptelcompanion.arshsaxena.in/',
+    icon: '/made-by-arsh/web-projects/icons/nptelcompanion-icon.webp',
+    img: '/made-by-arsh/web-projects/imgs/nptelcompanion.webp',
+    target: '_blank',
+  },
+  // ... more projects
+};
+```
+
+</CodeGroup>
+
+## Home Page Layout
+
+Typical home page structure using these components:
+
+```jsx pages/index.js
+import AnimatedImgsSection from '@/components/Home/AnimatesImgsSection';
+import SocialsSection from '@/components/Home/SocialsSection';
+import MadeByArshSection from '@/components/Home/MadeByArshSection';
+
+export default function Home() {
+  return (
+    <main>
+      <section className="py-10">
+        <AnimatedImgsSection />
+      </section>
+      
+      <section className="py-10">
+        <SocialsSection />
+      </section>
+      
+      <section className="py-10">
+        <MadeByArshSection />
+      </section>
+    </main>
+  );
+}
+```
+
+## Performance Optimizations
+
+<CardGroup cols={2}>
+  <Card title="Memoization" icon="memory">
+    `ProfileText` and `TypedWords` are memoized with `React.memo()` to prevent unnecessary re-renders
+  </Card>
+  
+  <Card title="useCallback" icon="bolt">
+    Navigation handlers use `useCallback` to maintain referential equality
+  </Card>
+  
+  <Card title="Lazy Loading" icon="image">
+    Next.js Image component provides automatic image optimization and lazy loading
+  </Card>
+  
+  <Card title="Conditional Rendering" icon="eye">
+    Components check `mounted` state to prevent hydration mismatches
+  </Card>
+</CardGroup>
+
+## Related Components
+
+- [Layout Components](/components/layout) - Navbar and Footer
+- [Made by Arsh Components](/components/made-by-arsh) - Detailed project pages
