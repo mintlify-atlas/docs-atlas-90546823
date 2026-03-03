@@ -1,0 +1,91 @@
+{
+  "projectType": "frontend",
+  "projectName": "Arsh Saxena Portfolio",
+  "projectDescription": "A modern Next.js portfolio website showcasing web projects, templates, and personal work by Arsh Saxena.",
+  "theme": "palm",
+  "primaryColor": "#22c55e",
+  "lightColor": "#166534",
+  "darkColor": "#166534",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Getting Started",
+            "pages": [
+              "introduction",
+              "quickstart",
+              "installation"
+            ]
+          },
+          {
+            "group": "Project Structure",
+            "pages": [
+              "structure/overview",
+              "structure/components",
+              "structure/routing",
+              "structure/styling"
+            ]
+          },
+          {
+            "group": "Components",
+            "pages": [
+              "components/layout",
+              "components/home",
+              "components/about",
+              "components/made-by-arsh",
+              "components/theme"
+            ]
+          },
+          {
+            "group": "Features",
+            "pages": [
+              "features/projects",
+              "features/templates",
+              "features/animations",
+              "features/dark-mode"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Guides",
+        "groups": [
+          {
+            "group": "Customization",
+            "pages": [
+              "guides/customizing-theme",
+              "guides/adding-projects",
+              "guides/modifying-content",
+              "guides/deployment"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Next.js 15 with App Router",
+    "Dark mode support with next-themes",
+    "Animated background and UI components",
+    "Responsive design with Tailwind CSS",
+    "Project showcase with web projects and templates",
+    "Dynamic routing for project pages",
+    "SEO optimized with metadata and sitemaps",
+    "TypeScript animations with typed.js"
+  ],
+  "publicApiSurface": [
+    "Home page with animated introduction",
+    "About page with timeline and skills",
+    "Made by Arsh section with projects",
+    "Connect page with contact form",
+    "Resume page",
+    "Web projects: NPTEL Companion, aEducational, VIT Chennai Faculty Info, aConverter, Solar System, Colors, QR Generator, Weather",
+    "Web templates: Simple Old School, Apple Style Navigation Bar, Modern Footer",
+    "Python projects: Ping Pong, Snake, Space Invaders, Sudoku, Truck vs Car, Typing Speed Calculator",
+    "Web mini projects: Ping Pong, Rock Paper Scissors, Snake, Stopwatch, Tic Tac Toe",
+    "Theme toggle component",
+    "Animated background component"
+  ]
+}
